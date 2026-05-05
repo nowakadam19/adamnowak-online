@@ -1,71 +1,110 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import Link from "next/link";
-import { getPost, getAllPosts } from "@/lib/posts";
+import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import Link from 'next/link'
+import { getPost, getAllPosts } from '@/lib/posts'
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }
 
 export async function generateStaticParams() {
-  return getAllPosts().map((post) => ({ slug: post.slug }));
+  return getAllPosts().map(post => ({ slug: post.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const post = await getPost(slug);
-  if (!post) return {};
+  const { slug } = await params
+  const post = await getPost(slug)
+  if (!post) return {}
   return {
     title: post.title,
     description: post.excerpt,
-  };
+  }
 }
 
 export default async function PostPage({ params }: Props) {
-  const { slug } = await params;
-  const post = await getPost(slug);
-  if (!post) notFound();
+  const { slug } = await params
+  const post = await getPost(slug)
+  if (!post) notFound()
 
-  const date = new Date(post.date).toLocaleDateString("pl-PL", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const date = new Date(post.date).toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-16">
+    <div
+      className="mx-auto max-w-[760px] px-6 md:px-12"
+      style={{ paddingTop: 'calc(72px + 60px)', paddingBottom: '72px' }}
+    >
       <Link
         href="/blog"
-        className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        className="inline-flex items-center gap-1.5 no-underline mb-12 transition-colors duration-200 text-muted hover:text-amber"
+        style={{
+          fontFamily: 'var(--font-syne)',
+          fontSize: '11px',
+          fontWeight: 600,
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+        }}
       >
-        ← Blog
+        ← Thinking
       </Link>
 
-      <article className="mt-8">
-        <header className="mb-10">
-          <time className="text-sm text-zinc-500">{date}</time>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight leading-tight">
-            {post.title}
-          </h1>
+      <article>
+        <header className="mb-12">
           {post.tags.length > 0 && (
-            <div className="mt-4 flex gap-2 flex-wrap">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
-                >
-                  {tag}
-                </span>
-              ))}
+            <div
+              className="mb-4"
+              style={{
+                fontFamily: 'var(--font-syne)',
+                fontSize: '10px',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: 'var(--amber)',
+              }}
+            >
+              {post.tags.join(' · ')}
             </div>
           )}
+
+          <h1
+            className="mb-6"
+            style={{
+              fontFamily: 'var(--font-cormorant)',
+              fontSize: 'clamp(32px, 4vw, 52px)',
+              fontWeight: 400,
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
+              color: 'var(--ink)',
+            }}
+          >
+            {post.title}
+          </h1>
+
+          <div
+            className="flex items-center gap-3"
+            style={{
+              fontFamily: 'var(--font-syne)',
+              fontSize: '10px',
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: 'var(--muted)',
+            }}
+          >
+            <time dateTime={post.date}>{date}</time>
+            <span style={{ color: 'var(--border)' }}>·</span>
+            <span>{post.readTime} min read</span>
+          </div>
         </header>
 
         <div
-          className="prose prose-zinc dark:prose-invert max-w-none"
+          className="prose max-w-none"
           dangerouslySetInnerHTML={{ __html: post.contentHtml }}
         />
       </article>
     </div>
-  );
+  )
 }

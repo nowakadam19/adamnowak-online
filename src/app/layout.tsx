@@ -1,39 +1,123 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Cormorant_Garamond, Syne, DM_Sans } from 'next/font/google'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import { LangProvider } from '@/components/LangProvider'
+import './globals.css'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const cormorant = Cormorant_Garamond({
+  weight: ['400', '500'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  variable: '--font-cormorant',
+  display: 'swap',
+})
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const syne = Syne({
+  subsets: ['latin'],
+  variable: '--font-syne',
+  display: 'swap',
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: {
-    default: "Adam Nowak",
-    template: "%s | Adam Nowak",
+    default: 'Adam Nowak — Customer Loyalty & CRM Intelligence',
+    template: '%s | Adam Nowak',
   },
-  description: "Blog o programowaniu, architekturze webowej i rzemiośle inżynierskim.",
-};
+  description:
+    'Practical thinking on customer loyalty, CRM and retention marketing — clear frameworks, honest takes, and actionable ideas from 15+ years across EMEA, NAM and APAC.',
+  metadataBase: new URL('https://adamnowak.online'),
+  alternates: { canonical: 'https://adamnowak.online' },
+  robots: { index: true, follow: true },
+  keywords: [
+    'customer loyalty',
+    'CRM strategy',
+    'retention marketing',
+    'loyalty programme',
+    'customer marketing',
+    'behavioural economics',
+    'customer lifetime value',
+    'NPS',
+  ],
+  openGraph: {
+    type: 'website',
+    url: 'https://adamnowak.online',
+    title: 'Adam Nowak — Customer Loyalty & CRM Intelligence',
+    description: 'Customer loyalty is full of noise. This is the signal.',
+    siteName: 'Adam Nowak',
+    locale: 'en_GB',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Adam Nowak — Customer Loyalty & CRM Intelligence',
+    description: 'Customer loyalty is full of noise. This is the signal.',
+  },
+}
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': 'https://adamnowak.online/#person',
+      name: 'Adam Nowak',
+      url: 'https://adamnowak.online',
+      jobTitle: 'Customer Marketing Strategist',
+      description:
+        'Senior CRM and loyalty strategy professional with 15+ years of experience across EMEA, NAM and APAC. Creator of the Customer Marketing Blueprint.',
+      knowsAbout: [
+        'Customer Loyalty',
+        'CRM Strategy',
+        'Retention Marketing',
+        'Behavioural Psychology',
+        'Customer Lifetime Value',
+        'Loyalty Programmes',
+        'Net Promoter Score',
+        'Customer Data Platforms',
+      ],
+      sameAs: ['https://www.linkedin.com/in/adamnowak'],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://adamnowak.online/#website',
+      url: 'https://adamnowak.online',
+      name: 'Adam Nowak — Customer Loyalty Intelligence',
+      description: 'Practical thinking on customer loyalty, CRM and retention marketing.',
+      inLanguage: ['en', 'pl'],
+    },
+    {
+      '@type': 'Blog',
+      '@id': 'https://adamnowak.online/blog',
+      name: 'Thinking — Adam Nowak',
+      description: 'Articles on customer loyalty, CRM, pricing psychology and behavioural marketing.',
+      url: 'https://adamnowak.online/blog',
+    },
+  ],
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pl" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+    <html
+      lang="en"
+      className={`${cormorant.variable} ${syne.variable} ${dmSans.variable}`}
+    >
+      <body className="flex min-h-screen flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <LangProvider>
+          <Header />
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </LangProvider>
       </body>
     </html>
-  );
+  )
 }
