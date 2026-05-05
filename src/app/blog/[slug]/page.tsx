@@ -1,7 +1,11 @@
+import fs from 'fs'
+import path from 'path'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getPost, getAllPosts } from '@/lib/posts'
+
+const postsDir = path.join(process.cwd(), 'src/content/posts')
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -13,20 +17,25 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const post = await getPost(slug)
+  const post = getAllPosts().find(p => p.slug === slug)
   if (!post) return {}
-  return {
-    title: post.title,
-    description: post.excerpt,
-  }
+  return { title: post.title, description: post.excerpt }
 }
 
-export default async function PostPage({ params }: Props) {
-  const { slug } = await params
-  const post = await getPost(slug)
-  if (!post) notFound()
-
-  const date = new Date(post.date).toLocaleDateString('en-GB', {
+function PostShell({
+  title,
+  date,
+  tags,
+  readTime,
+  children,
+}: {
+  title: string
+  date: string
+  tags: string[]
+  readTime: number
+  children: React.ReactNode
+}) {
+  const formatted = new Date(date).toLocaleDateString('en-GB', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -53,7 +62,7 @@ export default async function PostPage({ params }: Props) {
 
       <article>
         <header className="mb-12">
-          {post.tags.length > 0 && (
+          {tags.length > 0 && (
             <div
               className="mb-4"
               style={{
@@ -65,10 +74,9 @@ export default async function PostPage({ params }: Props) {
                 color: 'var(--amber)',
               }}
             >
-              {post.tags.join(' · ')}
+              {tags.join(' · ')}
             </div>
           )}
-
           <h1
             className="mb-6"
             style={{
@@ -80,9 +88,8 @@ export default async function PostPage({ params }: Props) {
               color: 'var(--ink)',
             }}
           >
-            {post.title}
+            {title}
           </h1>
-
           <div
             className="flex items-center gap-3"
             style={{
@@ -94,17 +101,54 @@ export default async function PostPage({ params }: Props) {
               color: 'var(--muted)',
             }}
           >
-            <time dateTime={post.date}>{date}</time>
+            <time dateTime={date}>{formatted}</time>
             <span style={{ color: 'var(--border)' }}>·</span>
-            <span>{post.readTime} min read</span>
+            <span>{readTime} min read</span>
           </div>
         </header>
 
-        <div
-          className="prose max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.contentHtml }}
-        />
+        {children}
       </article>
     </div>
+  )
+}
+
+export default async function PostPage({ params }: Props) {
+  const { slug } = await params
+  const meta = getAllPosts().find(p => p.slug === slug)
+  if (!meta) notFound()
+
+  const mdxPath = path.join(postsDir, `${slug}.mdx`)
+  const isMdx = fs.existsSync(mdxPath)
+
+  if (isMdx) {
+    const { default: Post } = await import(`@/content/posts/${slug}.mdx`)
+    return (
+      <PostShell
+        title={meta.title}
+        date={meta.date}
+        tags={meta.tags}
+        readTime={meta.readTime}
+      >
+        <Post />
+      </PostShell>
+    )
+  }
+
+  const post = await getPost(slug)
+  if (!post) notFound()
+
+  return (
+    <PostShell
+      title={post.title}
+      date={post.date}
+      tags={post.tags}
+      readTime={post.readTime}
+    >
+      <div
+        className="prose max-w-none"
+        dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+      />
+    </PostShell>
   )
 }

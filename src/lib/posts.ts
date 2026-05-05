@@ -20,11 +20,11 @@ export interface Post extends PostMeta {
 }
 
 export function getAllPosts(): PostMeta[] {
-  const files = fs.readdirSync(postsDir).filter(f => f.endsWith('.md'))
+  const files = fs.readdirSync(postsDir).filter(f => f.endsWith('.md') || f.endsWith('.mdx'))
 
   return files
     .map(file => {
-      const slug = file.replace(/\.md$/, '')
+      const slug = file.replace(/\.(md|mdx)$/, '')
       const raw = fs.readFileSync(path.join(postsDir, file), 'utf8')
       const { data, content } = matter(raw)
       const wordCount = content.trim().split(/\s+/).filter(Boolean).length
