@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
 
-const CONTENT_DIR = path.join(process.cwd(), 'content/loyalty-system')
+const CONTENT_DIR = path.join(process.cwd(), 'src/content/loyalty-system')
 
 export interface PillarMeta {
   slug: string
