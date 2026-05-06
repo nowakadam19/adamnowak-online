@@ -3,7 +3,7 @@
 import Link from 'next/link'
 
 const NAV_LINKS = [
-  { href: '/blog', label: 'Thinking' },
+  { href: '/blog', label: 'Blog' },
   { href: '/loyalty-system', label: 'Loyalty System' },
   { href: '/about', label: 'About' },
 ]

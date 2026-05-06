@@ -82,7 +82,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             color: 'var(--amber)',
           }}
         >
-          Explore the thinking →
+          Explore the blog →
         </Link>
       </section>
 
@@ -90,7 +90,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
 
       {/* ── THINKING ─────────────────────────────────────────── */}
       <section
-        id="thinking"
+        id="blog"
         className="mx-auto max-w-[760px] px-6 md:px-12 py-[72px]"
         aria-label="Latest articles"
       >
@@ -110,7 +110,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             }}
           >
             <span style={{ width: '20px', height: '1px', background: 'var(--amber)', display: 'inline-block' }} />
-            Latest thinking
+            Latest posts
           </div>
 
           <Link

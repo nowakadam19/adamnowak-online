@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { getAllPosts } from '@/lib/posts'
 
 export const metadata: Metadata = {
-  title: 'Thinking',
+  title: 'Blog',
   description: 'Articles on customer loyalty, CRM, pricing psychology and behavioural marketing.',
 }
 
@@ -23,7 +23,7 @@ export default function BlogPage() {
           color: 'var(--ink)',
         }}
       >
-        Thinking
+        Blog
       </h1>
 
       {posts.length === 0 ? (

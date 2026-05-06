@@ -57,7 +57,7 @@ function PostShell({
           textTransform: 'uppercase',
         }}
       >
-        ← Thinking
+        ← Blog
       </Link>
 
       <article>

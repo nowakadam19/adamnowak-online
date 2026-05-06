@@ -93,7 +93,7 @@ const jsonLd = {
     {
       '@type': 'Blog',
       '@id': 'https://adamnowak.online/blog',
-      name: 'Thinking — Adam Nowak',
+      name: 'Blog — Adam Nowak',
       description: 'Articles on customer loyalty, CRM, pricing psychology and behavioural marketing.',
       url: 'https://adamnowak.online/blog',
     },
