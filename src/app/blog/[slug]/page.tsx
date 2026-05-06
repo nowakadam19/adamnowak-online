@@ -81,7 +81,7 @@ function PostShell({
             className="mb-6"
             style={{
               fontFamily: 'var(--font-cormorant)',
-              fontSize: 'clamp(32px, 4vw, 52px)',
+              fontSize: 'clamp(38px, 4vw, 52px)',
               fontWeight: 400,
               lineHeight: 1.1,
               letterSpacing: '-0.02em',

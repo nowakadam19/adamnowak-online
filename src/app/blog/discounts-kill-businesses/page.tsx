@@ -161,7 +161,7 @@ function TierCard({
             fontWeight: 700,
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
-            color: 'var(--amber)',
+            color: featured ? '#4CAF7D' : 'var(--amber)',
             marginBottom: '4px',
           }}
         >
@@ -175,7 +175,7 @@ function TierCard({
           fontWeight: 700,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
-          color: featured ? 'var(--amber)' : 'var(--muted)',
+          color: featured ? '#4CAF7D' : 'var(--muted)',
           marginBottom: '8px',
         }}
       >
@@ -186,7 +186,7 @@ function TierCard({
           fontFamily: f.serif,
           fontSize: '36px',
           fontWeight: 300,
-          color: featured ? '#f5f0e8' : 'var(--ink)',
+          color: featured ? 'var(--paper)' : 'var(--ink)',
           lineHeight: 1,
           marginBottom: '8px',
         }}
@@ -200,7 +200,7 @@ function TierCard({
           fontWeight: 600,
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
-          color: featured ? 'rgba(245,240,232,0.6)' : 'var(--muted)',
+          color: featured ? 'rgba(255,255,255,0.88)' : 'var(--muted)',
         }}
       >
         {desc}
@@ -231,7 +231,7 @@ function SaasTierCard({
             fontWeight: 700,
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
-            color: 'var(--amber)',
+            color: featured ? '#4CAF7D' : 'var(--amber)',
             marginBottom: '4px',
           }}
         >
@@ -245,7 +245,7 @@ function SaasTierCard({
           fontWeight: 700,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
-          color: featured ? 'var(--amber)' : 'var(--muted)',
+          color: featured ? '#4CAF7D' : 'var(--muted)',
           marginBottom: '8px',
         }}
       >
@@ -256,7 +256,7 @@ function SaasTierCard({
           fontFamily: f.serif,
           fontSize: '28px',
           fontWeight: 300,
-          color: featured ? '#f5f0e8' : 'var(--ink)',
+          color: featured ? 'var(--paper)' : 'var(--ink)',
           lineHeight: 1,
           marginBottom: '8px',
         }}
@@ -271,7 +271,7 @@ function SaasTierCard({
           fontWeight: 600,
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
-          color: featured ? 'rgba(245,240,232,0.6)' : 'var(--muted)',
+          color: featured ? 'rgba(255,255,255,0.88)' : 'var(--muted)',
         }}
       >
         {desc}
@@ -362,7 +362,7 @@ export default function DiscountsPage() {
               background: 'var(--ink)',
               padding: '32px 40px',
               margin: '0 0 48px',
-              borderLeft: '3px solid var(--amber)',
+              borderLeft: '3px solid #4CAF7D',
             }}
           >
             <div
@@ -372,7 +372,7 @@ export default function DiscountsPage() {
                 fontWeight: 700,
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
-                color: 'var(--amber)',
+                color: '#4CAF7D',
                 marginBottom: '12px',
               }}
             >
@@ -382,7 +382,7 @@ export default function DiscountsPage() {
               style={{
                 fontSize: '16px',
                 lineHeight: 1.7,
-                color: 'rgba(255,255,255,0.85)',
+                color: 'rgba(255,255,255,0.88)',
                 margin: 0,
               }}
             >
@@ -768,7 +768,7 @@ export default function DiscountsPage() {
                         fontWeight: 700,
                         letterSpacing: '0.1em',
                         textTransform: 'uppercase',
-                        color: featured ? 'var(--amber)' : 'var(--muted)',
+                        color: featured ? '#4CAF7D' : 'var(--muted)',
                         marginBottom: '6px',
                       }}
                     >
@@ -791,7 +791,7 @@ export default function DiscountsPage() {
                         fontFamily: f.syne,
                         fontSize: '10px',
                         fontWeight: 600,
-                        color: featured ? 'rgba(245,240,232,0.55)' : 'var(--muted)',
+                        color: featured ? 'rgba(255,255,255,0.88)' : 'var(--muted)',
                       }}
                     >
                       {diff}
@@ -909,7 +909,7 @@ export default function DiscountsPage() {
               style={{
                 fontSize: '16px',
                 lineHeight: 1.75,
-                color: 'rgba(245,240,232,0.8)',
+                color: 'rgba(255,255,255,0.88)',
                 marginBottom: '1em',
               }}
             >
@@ -923,7 +923,7 @@ export default function DiscountsPage() {
               style={{
                 fontSize: '16px',
                 lineHeight: 1.75,
-                color: 'rgba(245,240,232,0.8)',
+                color: 'rgba(255,255,255,0.88)',
                 marginBottom: '1em',
               }}
             >
@@ -933,7 +933,7 @@ export default function DiscountsPage() {
               style={{
                 fontSize: '16px',
                 lineHeight: 1.75,
-                color: 'rgba(245,240,232,0.8)',
+                color: 'rgba(255,255,255,0.88)',
                 marginBottom: 0,
               }}
             >

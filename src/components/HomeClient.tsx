@@ -54,7 +54,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             color: 'var(--ink)',
           }}
           dangerouslySetInnerHTML={{
-            __html: '<em style="font-style:italic">Customer loyalty is full of noise.</em><br><span style="color:var(--amber)">This is the signal.</span>',
+            __html: '<em style="font-style:italic;font-weight:400">Customer loyalty is full of noise.</em><br><span style="color:var(--amber)">This is the signal.</span>',
           }}
         />
 
@@ -228,7 +228,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
                 fontWeight: 700,
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
-                color: 'rgba(245,240,232,0.4)',
+                color: 'rgba(255,255,255,0.88)',
               }}
             >
               <span style={{ width: '20px', height: '1px', background: 'var(--amber)', display: 'inline-block' }} />
@@ -247,7 +247,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               color: 'var(--paper)',
             }}
             dangerouslySetInnerHTML={{
-              __html: 'New to loyalty marketing?<br><em style="font-style:italic;color:var(--amber-light)">Start here.</em>',
+              __html: 'New to loyalty marketing?<br><em style="font-style:italic;color:var(--amber-on-dark)">Start here.</em>',
             }}
           />
 
@@ -255,7 +255,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             className="mb-10"
             style={{
               fontSize: '16px',
-              color: 'rgba(245,240,232,0.65)',
+              color: 'rgba(255,255,255,0.88)',
               maxWidth: '520px',
               lineHeight: 1.7,
             }}
@@ -307,7 +307,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
                     fontFamily: 'var(--font-cormorant)',
                     fontSize: '40px',
                     fontWeight: 300,
-                    color: 'rgba(245,240,232,0.12)',
+                    color: 'rgba(245,240,232,0.4)',
                     lineHeight: 1,
                     marginBottom: '10px',
                   }}
@@ -321,7 +321,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
                     fontWeight: 700,
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
-                    color: 'rgba(245,240,232,0.7)',
+                    color: 'rgba(245,240,232,0.92)',
                     lineHeight: 1.4,
                   }}
                 >
