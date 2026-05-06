@@ -4,7 +4,7 @@ import ProfitChart from '@/components/article/ProfitChart'
 export const metadata: Metadata = {
   title: 'Discounts Kill Businesses. Pricing Psychology Saves Them.',
   description:
-    'A 1% price increase delivers 8–11% more profit. A 5% discount wipes out 60% of your margins. Most marketers choose the discount anyway.',
+    'A 1% price increase can lift operating profit by roughly 8–10% if volume holds. On single-digit margins, a modest discount can erase most of your profit.',
 }
 
 // ── Design tokens ─────────────────────────────────────────────
@@ -420,7 +420,7 @@ export default function DiscountsPage() {
             around 30% under the same assumptions.
           </p>
           <p style={{ marginBottom: '1.6em', color: 'var(--ink)' }}>
-            That gap — between 20% up and 31% down — is where pricing psychology lives.
+            That gap — between 20% up and 30% down — is where pricing psychology lives.
           </p>
 
           {/* Visual: brutal math */}
