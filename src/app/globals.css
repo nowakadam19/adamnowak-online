@@ -3,15 +3,16 @@
 
 :root {
   --ink: #0d0d0b;
-  --paper: #f5f0e8;
+  --paper: #EFEFEB;
   --cream: #ede8dc;
-  --amber: #c8853a;
-  --muted: #6b6558;
+  --amber: #1E4530;
+  --amber-light: #2D6E47;
+  --muted: #5A5950;
   --border: #d4cfc4;
 }
 
 @theme inline {
-  --font-sans: var(--font-dm-sans);
+  --font-sans: var(--font-inter);
   --font-serif: var(--font-cormorant);
   --font-display: var(--font-syne);
 

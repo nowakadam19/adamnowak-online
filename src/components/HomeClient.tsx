@@ -54,7 +54,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             color: 'var(--ink)',
           }}
           dangerouslySetInnerHTML={{
-            __html: 'Customer loyalty is full of noise.<br><em style="font-style:italic;color:var(--amber)">This is the signal.</em>',
+            __html: '<em style="font-style:italic">Customer loyalty is full of noise.</em><br><span style="color:var(--amber)">This is the signal.</span>',
           }}
         />
 
@@ -72,14 +72,17 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
 
         <Link
           href="/blog"
-          className="animate-fade-up-4 inline-flex items-center gap-2 no-underline transition-all duration-200 hover:gap-3"
+          className="animate-fade-up-4 inline-flex items-center gap-2 no-underline transition-colors duration-200"
           style={{
             fontFamily: 'var(--font-syne)',
-            fontSize: '12px',
+            fontSize: '11px',
             fontWeight: 700,
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
-            color: 'var(--amber)',
+            color: 'var(--ink)',
+            border: '1.5px solid var(--ink)',
+            background: 'transparent',
+            padding: '10px 20px',
           }}
         >
           Explore the blog →
@@ -244,7 +247,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               color: 'var(--paper)',
             }}
             dangerouslySetInnerHTML={{
-              __html: 'New to loyalty marketing?<br><em style="font-style:italic;color:#e8a050">Start here.</em>',
+              __html: 'New to loyalty marketing?<br><em style="font-style:italic;color:var(--amber-light)">Start here.</em>',
             }}
           />
 
@@ -269,16 +272,17 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               fontWeight: 700,
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
-              color: 'var(--ink)',
-              background: 'var(--paper)',
+              color: 'var(--paper)',
+              background: 'transparent',
+              border: '1.5px solid var(--paper)',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = 'var(--amber)'
-              e.currentTarget.style.color = 'var(--paper)'
-            }}
-            onMouseLeave={e => {
               e.currentTarget.style.background = 'var(--paper)'
               e.currentTarget.style.color = 'var(--ink)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.color = 'var(--paper)'
             }}
           >
             Explore the Loyalty System

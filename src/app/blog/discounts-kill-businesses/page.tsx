@@ -287,7 +287,7 @@ export default function DiscountsPage() {
     <div style={{ paddingTop: '60px' }}>
       <div
         className="mx-auto max-w-[760px] px-5 md:px-12"
-        style={{ fontFamily: 'var(--font-dm-sans)' }}
+        style={{ fontFamily: 'var(--font-inter)' }}
       >
 
         {/* ── HEADER ─────────────────────────────────────────── */}

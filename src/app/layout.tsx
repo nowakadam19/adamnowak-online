@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Cormorant_Garamond, Syne, DM_Sans } from 'next/font/google'
+import { Cormorant_Garamond, Syne, Inter } from 'next/font/google'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import './globals.css'
@@ -18,9 +18,9 @@ const syne = Syne({
   display: 'swap',
 })
 
-const dmSans = DM_Sans({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-dm-sans',
+  variable: '--font-inter',
   display: 'swap',
 })
 
@@ -104,7 +104,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${syne.variable} ${dmSans.variable}`}
+      className={`${cormorant.variable} ${syne.variable} ${inter.variable}`}
     >
       <body className="flex min-h-screen flex-col">
         <script
