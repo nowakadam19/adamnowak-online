@@ -1,12 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { useLang } from './LangProvider'
+
+const NAV_LINKS = [
+  { href: 'https://linkedin.com/in/adamnowak', label: 'LinkedIn', external: true },
+  { href: '/newsletter', label: 'Newsletter' },
+  { href: '/work-with-me', label: 'Work with me' },
+]
 
 export default function Footer() {
-  const { lang } = useLang()
-  const t = (en: string, pl: string) => lang === 'en' ? en : pl
-
   return (
     <footer
       className="flex items-center justify-between flex-wrap gap-4 px-6 md:px-12 py-10 border-t-2"
@@ -29,11 +31,7 @@ export default function Footer() {
 
       <nav>
         <ul className="flex gap-6 list-none">
-          {[
-            { href: 'https://linkedin.com/in/adamnowak', label: 'LinkedIn', external: true },
-            { href: '/newsletter', en: 'Newsletter', pl: 'Newsletter' },
-            { href: '/work-with-me', en: 'Work with me', pl: 'Współpraca' },
-          ].map(({ href, en, pl, label, external }) => (
+          {NAV_LINKS.map(({ href, label, external }) => (
             <li key={href}>
               <Link
                 href={href}
@@ -50,7 +48,7 @@ export default function Footer() {
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--amber)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(245,240,232,0.4)')}
               >
-                {label ?? t(en!, pl!)}
+                {label}
               </Link>
             </li>
           ))}
