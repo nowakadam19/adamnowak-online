@@ -24,7 +24,7 @@ export default function Header() {
         <nav className="hidden md:flex gap-7">
           {[
             { href: '/blog', en: 'Thinking', pl: 'Myślenie' },
-            { href: '/blueprint', en: 'Blueprint', pl: 'Blueprint' },
+            { href: '/loyalty-system', en: 'Loyalty System', pl: 'Loyalty System' },
             { href: '/about', en: 'About', pl: 'O mnie' },
           ].map(({ href, en, pl }) => (
             <Link
