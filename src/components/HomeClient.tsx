@@ -289,9 +289,8 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
           </Link>
 
           <nav
-            className="grid mt-12"
+            className="grid grid-cols-2 md:grid-cols-3 mt-12"
             style={{
-              gridTemplateColumns: 'repeat(3, 1fr)',
               borderTop: '1px solid rgba(245,240,232,0.1)',
             }}
             aria-label="Loyalty System pillars"

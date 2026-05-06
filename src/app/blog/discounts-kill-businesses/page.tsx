@@ -744,6 +744,7 @@ export default function DiscountsPage() {
                   gap: '1px',
                   background: 'var(--border)',
                   marginBottom: '20px',
+                  overflowX: 'auto',
                 }}
               >
                 {(
