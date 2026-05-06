@@ -43,7 +43,8 @@ export function getAllPosts(): PostMeta[] {
 }
 
 export async function getPost(slug: string): Promise<Post | null> {
-  const filePath = path.join(postsDir, `${slug}.md`)
+  const mdxPath = path.join(postsDir, `${slug}.mdx`)
+  const filePath = fs.existsSync(mdxPath) ? mdxPath : path.join(postsDir, `${slug}.md`)
   if (!fs.existsSync(filePath)) return null
 
   const raw = fs.readFileSync(filePath, 'utf8')
