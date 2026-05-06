@@ -10,7 +10,7 @@ import {
 import type { Metadata } from 'next'
 
 interface Props {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateStaticParams() {
@@ -18,7 +18,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const pillar = getPillar(params.slug)
+  const { slug } = await params
+  const pillar = getPillar(slug)
   if (!pillar) return {}
   return {
     title: `${pillar.title} — The Loyalty System`,
@@ -67,12 +68,13 @@ const MDX_COMPONENTS = {
   ),
 }
 
-export default function PillarPage({ params }: Props) {
-  const pillar = getPillar(params.slug)
+export default async function PillarPage({ params }: Props) {
+  const { slug } = await params
+  const pillar = getPillar(slug)
   if (!pillar) notFound()
 
   const allPillars = getAllPillars()
-  const { prev, next } = getAdjacentPillars(params.slug)
+  const { prev, next } = getAdjacentPillars(slug)
 
   const schema = {
     '@context': 'https://schema.org',
