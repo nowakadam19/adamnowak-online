@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Cormorant_Garamond, Syne, DM_Sans } from 'next/font/google'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { LangProvider } from '@/components/LangProvider'
 import './globals.css'
 
 const cormorant = Cormorant_Garamond({
@@ -89,7 +88,7 @@ const jsonLd = {
       url: 'https://adamnowak.online',
       name: 'Adam Nowak — Customer Loyalty Intelligence',
       description: 'Practical thinking on customer loyalty, CRM and retention marketing.',
-      inLanguage: ['en', 'pl'],
+      inLanguage: 'en',
     },
     {
       '@type': 'Blog',
@@ -112,11 +111,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <LangProvider>
-          <Header />
-          <div className="flex-1">{children}</div>
-          <Footer />
-        </LangProvider>
+        <Header />
+        <div className="flex-1">{children}</div>
+        <Footer />
       </body>
     </html>
   )

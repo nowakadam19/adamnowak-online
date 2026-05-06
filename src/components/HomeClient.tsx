@@ -2,29 +2,22 @@
 
 import Link from 'next/link'
 import type { PostMeta } from '@/lib/posts'
-import { useLang } from './LangProvider'
 
-const PILLARS: { num: string; en: string; pl: string }[] = [
-  { num: '01', en: "Know who you're talking to", pl: 'Poznaj swoich klientów' },
-  { num: '02', en: 'Start with people, not products', pl: 'Zacznij od ludzi, nie produktów' },
-  { num: '03', en: 'Give before you ask', pl: 'Dawaj zanim poprosisz' },
-  { num: '04', en: 'Your best customers are already here', pl: 'Twoi najlepsi klienci już tu są' },
-  { num: '05', en: 'Prove it pays', pl: 'Udowodnij że to się opłaca' },
-  { num: '06', en: "Make data everyone's job", pl: 'Dane to zadanie dla wszystkich' },
+const PILLARS: { num: string; label: string }[] = [
+  { num: '01', label: "Know who you're talking to" },
+  { num: '02', label: 'Start with people, not products' },
+  { num: '03', label: 'Give before you ask' },
+  { num: '04', label: 'Your best customers are already here' },
+  { num: '05', label: 'Prove it pays' },
+  { num: '06', label: "Make data everyone's job" },
 ]
 
-function formatDate(dateStr: string, lang: 'en' | 'pl') {
+function formatDate(dateStr: string) {
   const date = new Date(dateStr)
-  return date.toLocaleDateString(lang === 'en' ? 'en-GB' : 'pl-PL', {
-    year: 'numeric',
-    month: 'short',
-  })
+  return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short' })
 }
 
 export default function HomeClient({ posts }: { posts: PostMeta[] }) {
-  const { lang } = useLang()
-  const t = (en: string, pl: string) => lang === 'en' ? en : pl
-
   return (
     <>
       {/* ── HERO ─────────────────────────────────────────────── */}
@@ -47,7 +40,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             className="block shrink-0"
             style={{ width: '28px', height: '1px', background: 'var(--amber)' }}
           />
-          {t('Customer Loyalty Intelligence', 'Wiedza o Lojalności Klientów')}
+          Customer Loyalty Intelligence
         </div>
 
         <h1
@@ -61,10 +54,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             color: 'var(--ink)',
           }}
           dangerouslySetInnerHTML={{
-            __html: t(
-              'Customer loyalty is full of noise.<br><em style="font-style:italic;color:var(--amber)">This is the signal.</em>',
-              'Marketing lojalności pełen jest szumu.<br><em style="font-style:italic;color:var(--amber)">Tu znajdziesz sygnał.</em>'
-            ),
+            __html: 'Customer loyalty is full of noise.<br><em style="font-style:italic;color:var(--amber)">This is the signal.</em>',
           }}
         />
 
@@ -77,10 +67,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             lineHeight: 1.7,
           }}
         >
-          {t(
-            'Practical thinking on loyalty, CRM, and customer marketing — for practitioners who want clarity, not complexity.',
-            'Praktyczna wiedza o lojalności, CRM i marketingu klientów — dla praktyków, którzy szukają jasności, nie złożoności.'
-          )}
+          Practical thinking on loyalty, CRM, and customer marketing — for practitioners who want clarity, not complexity.
         </p>
 
         <Link
@@ -95,7 +82,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             color: 'var(--amber)',
           }}
         >
-          {t('Explore the thinking', 'Przeglądaj artykuły')} →
+          Explore the thinking →
         </Link>
       </section>
 
@@ -123,7 +110,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             }}
           >
             <span style={{ width: '20px', height: '1px', background: 'var(--amber)', display: 'inline-block' }} />
-            {t('Latest thinking', 'Ostatnie teksty')}
+            Latest thinking
           </div>
 
           <Link
@@ -138,7 +125,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               color: 'var(--amber)',
             }}
           >
-            {t('All articles', 'Wszystkie artykuły')}
+            All articles
           </Link>
         </div>
 
@@ -213,7 +200,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
                   }}
                 >
                   <time itemProp="datePublished" dateTime={post.date}>
-                    {formatDate(post.date, lang)}
+                    {formatDate(post.date)}
                   </time>
                   {' · '}{post.readTime} min
                 </div>
@@ -242,7 +229,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               }}
             >
               <span style={{ width: '20px', height: '1px', background: 'var(--amber)', display: 'inline-block' }} />
-              {t('The Loyalty System', 'Loyalty System')}
+              The Loyalty System
             </div>
           </div>
 
@@ -257,10 +244,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               color: 'var(--paper)',
             }}
             dangerouslySetInnerHTML={{
-              __html: t(
-                'New to loyalty marketing?<br><em style="font-style:italic;color:#e8a050">Start here.</em>',
-                'Zaczynasz w marketingu lojalności?<br><em style="font-style:italic;color:#e8a050">Zacznij tutaj.</em>'
-              ),
+              __html: 'New to loyalty marketing?<br><em style="font-style:italic;color:#e8a050">Start here.</em>',
             }}
           />
 
@@ -273,10 +257,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               lineHeight: 1.7,
             }}
           >
-            {t(
-              'The Loyalty System is a practical framework for building customer loyalty that lasts — six pillars, each dependent on the others. An ecosystem, not a checklist.',
-              'Loyalty System to praktyczny framework do budowania trwałej lojalności klientów — sześć filarów, każdy zależny od pozostałych. Ekosystem, nie lista kroków.'
-            )}
+            The Loyalty System is a practical framework for building customer loyalty that lasts — six pillars, each dependent on the others. An ecosystem, not a checklist.
           </p>
 
           <Link
@@ -300,7 +281,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               e.currentTarget.style.color = 'var(--ink)'
             }}
           >
-            {t('Explore the Loyalty System', 'Poznaj Loyalty System')}
+            Explore the Loyalty System
           </Link>
 
           <nav
@@ -311,7 +292,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             }}
             aria-label="Loyalty System pillars"
           >
-            {PILLARS.map(({ num, en, pl }) => (
+            {PILLARS.map(({ num, label }) => (
               <div
                 key={num}
                 className="py-7 pr-6"
@@ -340,7 +321,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
                     lineHeight: 1.4,
                   }}
                 >
-                  {t(en, pl)}
+                  {label}
                 </div>
               </div>
             ))}
@@ -370,7 +351,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             }}
           >
             <span style={{ width: '20px', height: '1px', background: 'var(--amber)', display: 'inline-block' }} />
-            {t('About', 'O mnie')}
+            About
           </div>
 
           <p
@@ -384,10 +365,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               letterSpacing: '-0.01em',
             }}
             dangerouslySetInnerHTML={{
-              __html: t(
-                "I've spent 15+ years at the intersection of CRM, loyalty, and human behaviour — across EMEA, NAM, and APAC. I write to make this field <em style=\"font-style:italic;color:var(--amber)\">simpler and more honest</em> than most people leave it.",
-                "Spędziłem ponad 15 lat na styku CRM, lojalności i ludzkiego zachowania — w EMEA, NAM i APAC. Piszę po to, żeby ta dziedzina była <em style=\"font-style:italic;color:var(--amber)\">prostsza i bardziej uczciwa</em> niż większość ludzi ją pozostawia."
-              ),
+              __html: "I've spent 15+ years at the intersection of CRM, loyalty, and human behaviour — across EMEA, NAM, and APAC. I write to make this field <em style=\"font-style:italic;color:var(--amber)\">simpler and more honest</em> than most people leave it.",
             }}
           />
         </div>
