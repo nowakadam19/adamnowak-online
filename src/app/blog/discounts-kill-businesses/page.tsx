@@ -471,44 +471,6 @@ export default function DiscountsPage() {
             </div>
 
             <ProfitChart />
-
-            <div
-              style={{
-                display: 'flex',
-                gap: '20px',
-                marginTop: '16px',
-                fontFamily: f.syne,
-                fontSize: '11px',
-                fontWeight: 600,
-                color: 'var(--muted)',
-                flexWrap: 'wrap',
-              }}
-            >
-              <span>
-                <span
-                  style={{
-                    width: '10px',
-                    height: '10px',
-                    display: 'inline-block',
-                    marginRight: '6px',
-                    background: '#1D9E75',
-                  }}
-                />
-                Price increase, no customer loss
-              </span>
-              <span>
-                <span
-                  style={{
-                    width: '10px',
-                    height: '10px',
-                    display: 'inline-block',
-                    marginRight: '6px',
-                    background: '#A32D2D',
-                  }}
-                />
-                Price increase + 5% customer loss
-              </span>
-            </div>
             <p
               style={{
                 fontSize: '13px',

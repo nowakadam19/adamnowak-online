@@ -44,14 +44,18 @@ export default function ProfitChart() {
           scales: {
             x: {
               grid: { display: false },
-              ticks: { font: { family: 'DM Sans', size: 12 }, color: '#6b6558' },
+              ticks: {
+                font: { family: 'Inter', size: 10 },
+                color: '#6b6558',
+                maxRotation: 45,
+              },
             },
             y: {
               min: -50,
               max: 35,
               grid: { color: 'rgba(107,101,88,0.15)' },
               ticks: {
-                font: { family: 'DM Sans', size: 12 },
+                font: { family: 'Inter', size: 12 },
                 color: '#6b6558',
                 callback: v => (Number(v) > 0 ? '+' : '') + v + '%',
               },
@@ -66,12 +70,24 @@ export default function ProfitChart() {
   }, [])
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '240px' }}>
-      <canvas
-        ref={ref}
-        role="img"
-        aria-label="Bar chart: +20% profit with price increase alone, -31% profit if 5% of customers are lost"
-      />
+    <div>
+      <div style={{ position: 'relative', width: '100%', height: '240px' }}>
+        <canvas
+          ref={ref}
+          role="img"
+          aria-label="Bar chart: +20% profit with price increase alone, -31% profit if 5% of customers are lost"
+        />
+      </div>
+      <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+          <div style={{ width: '12px', height: '12px', background: '#1D9E75', flexShrink: 0 }} />
+          <span>Price increase, no customer loss</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+          <div style={{ width: '12px', height: '12px', background: '#A32D2D', flexShrink: 0 }} />
+          <span>Price increase + 5% customer loss</span>
+        </div>
+      </div>
     </div>
   )
 }
