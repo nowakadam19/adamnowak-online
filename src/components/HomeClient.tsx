@@ -297,17 +297,18 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             aria-label="Loyalty System pillars"
           >
             {PILLARS.map(({ num, label }) => (
-              <div
+              <a
                 key={num}
-                className="py-7 pr-6"
-                style={{ borderBottom: '1px solid rgba(245,240,232,0.1)' }}
+                href="/loyalty-system"
+                className="py-7 pr-6 no-underline group"
+                style={{ borderBottom: '1px solid rgba(245,240,232,0.1)', display: 'block' }}
               >
                 <div
                   style={{
                     fontFamily: 'var(--font-cormorant)',
                     fontSize: '40px',
                     fontWeight: 300,
-                    color: 'rgba(245,240,232,0.4)',
+                    color: 'rgba(255,255,255,0.45)',
                     lineHeight: 1,
                     marginBottom: '10px',
                   }}
@@ -315,19 +316,20 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
                   {num}
                 </div>
                 <div
+                  className="transition-colors duration-200 group-hover:text-[#4CAF7D]"
                   style={{
                     fontFamily: 'var(--font-syne)',
                     fontSize: '11px',
-                    fontWeight: 700,
+                    fontWeight: 600,
                     letterSpacing: '0.08em',
                     textTransform: 'uppercase',
-                    color: 'rgba(245,240,232,0.92)',
+                    color: 'rgba(255,255,255,0.95)',
                     lineHeight: 1.4,
                   }}
                 >
                   {label}
                 </div>
-              </div>
+              </a>
             ))}
           </nav>
         </div>
