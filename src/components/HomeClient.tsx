@@ -223,8 +223,8 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
         </div>
       </section>
 
-      {/* ── BLUEPRINT ────────────────────────────────────────── */}
-      <section aria-label="Customer Marketing Blueprint" style={{ background: 'var(--ink)' }}>
+      {/* ── LOYALTY SYSTEM ───────────────────────────────────── */}
+      <section aria-label="The Loyalty System" style={{ background: 'var(--ink)' }}>
         <div className="mx-auto max-w-[760px] px-6 md:px-12 py-[72px]">
           <div
             className="flex items-baseline justify-between mb-10 pb-4"
@@ -242,7 +242,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               }}
             >
               <span style={{ width: '20px', height: '1px', background: 'var(--amber)', display: 'inline-block' }} />
-              {t('The Blueprint', 'Blueprint')}
+              {t('The Loyalty System', 'Loyalty System')}
             </div>
           </div>
 
@@ -274,13 +274,13 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             }}
           >
             {t(
-              'The Customer Marketing Blueprint is a structured guide to building customer loyalty that lasts — six pillars, in order, with everything you need to go from zero to running.',
-              'Customer Marketing Blueprint to ustrukturyzowany przewodnik po budowaniu trwałej lojalności klientów — sześć filarów, w kolejności, ze wszystkim czego potrzebujesz.'
+              'The Loyalty System is a practical framework for building customer loyalty that lasts — six pillars, each dependent on the others. An ecosystem, not a checklist.',
+              'Loyalty System to praktyczny framework do budowania trwałej lojalności klientów — sześć filarów, każdy zależny od pozostałych. Ekosystem, nie lista kroków.'
             )}
           </p>
 
           <Link
-            href="/blueprint"
+            href="/loyalty-system"
             className="inline-block no-underline transition-colors duration-200 px-7 py-3.5"
             style={{
               fontFamily: 'var(--font-syne)',
@@ -300,7 +300,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               e.currentTarget.style.color = 'var(--ink)'
             }}
           >
-            {t('Explore the Blueprint', 'Poznaj Blueprint')}
+            {t('Explore the Loyalty System', 'Poznaj Loyalty System')}
           </Link>
 
           <nav
@@ -309,7 +309,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               gridTemplateColumns: 'repeat(3, 1fr)',
               borderTop: '1px solid rgba(245,240,232,0.1)',
             }}
-            aria-label="Blueprint pillars"
+            aria-label="Loyalty System pillars"
           >
             {PILLARS.map(({ num, en, pl }) => (
               <div
