@@ -4,8 +4,6 @@ import Link from 'next/link'
 
 const NAV_LINKS = [
   { href: 'https://linkedin.com/in/adamnowak', label: 'LinkedIn', external: true },
-  { href: '/newsletter', label: 'Newsletter' },
-  { href: '/work-with-me', label: 'Work with me' },
 ]
 
 export default function Footer() {
