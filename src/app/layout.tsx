@@ -31,8 +31,8 @@ export const metadata: Metadata = {
   },
   description:
     'Practical thinking on customer loyalty, CRM and retention marketing — clear frameworks, honest takes, and actionable ideas from 15+ years across EMEA, NAM and APAC.',
-  metadataBase: new URL('https://adamnowak.online'),
-  alternates: { canonical: 'https://adamnowak.online' },
+  metadataBase: new URL('https://www.adamnowak.online'),
+  alternates: { canonical: 'https://www.adamnowak.online' },
   robots: { index: true, follow: true },
   keywords: [
     'customer loyalty',
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: 'website',
-    url: 'https://adamnowak.online',
+    url: 'https://www.adamnowak.online',
     title: 'Adam Nowak — Customer Loyalty & CRM Intelligence',
     description: 'Customer loyalty is full of noise. This is the signal.',
     siteName: 'Adam Nowak',
@@ -73,9 +73,9 @@ const jsonLd = {
   '@graph': [
     {
       '@type': 'Person',
-      '@id': 'https://adamnowak.online/#person',
+      '@id': 'https://www.adamnowak.online/#person',
       name: 'Adam Nowak',
-      url: 'https://adamnowak.online',
+      url: 'https://www.adamnowak.online',
       jobTitle: 'Customer Marketing Strategist',
       description:
         'Senior CRM and loyalty strategy professional with 15+ years of experience across EMEA, NAM and APAC. Creator of the Customer Marketing Blueprint.',
@@ -93,18 +93,18 @@ const jsonLd = {
     },
     {
       '@type': 'WebSite',
-      '@id': 'https://adamnowak.online/#website',
-      url: 'https://adamnowak.online',
+      '@id': 'https://www.adamnowak.online/#website',
+      url: 'https://www.adamnowak.online',
       name: 'Adam Nowak — Customer Loyalty Intelligence',
       description: 'Practical thinking on customer loyalty, CRM and retention marketing.',
       inLanguage: 'en',
     },
     {
       '@type': 'Blog',
-      '@id': 'https://adamnowak.online/blog',
+      '@id': 'https://www.adamnowak.online/blog',
       name: 'Blog — Adam Nowak',
       description: 'Articles on customer loyalty, CRM, pricing psychology and behavioural marketing.',
-      url: 'https://adamnowak.online/blog',
+      url: 'https://www.adamnowak.online/blog',
     },
   ],
 }
