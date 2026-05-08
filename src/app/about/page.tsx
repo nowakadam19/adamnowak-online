@@ -55,9 +55,40 @@ export default function AboutPage() {
           Experience
         </h2>
 
-        <div style={{ color: 'var(--muted)', fontStyle: 'italic' }}>
-          [Content coming soon]
-        </div>
+        <p className="mb-6">
+          I&apos;ve spent seventeen years working in customer loyalty and CRM —
+          at store level, country level, and global scale.
+        </p>
+
+        <p className="mb-6">
+          Most of that time was at IKEA, where I started managing a single
+          store&apos;s marketing in Gdańsk and ended up running global loyalty
+          strategy from Malmö — overseeing a programme with over 100 million
+          members across 30 markets.
+        </p>
+
+        <p className="mb-6">
+          After IKEA, I took that same approach to Electrolux — building
+          global CRM and loyalty infrastructure from Stockholm across EMEA,
+          NAM, and APAC. Different industry, different product lifecycle,
+          same underlying question: how do you make customers want to come back?
+        </p>
+
+        <p className="mb-6">
+          I&apos;m now at Avis Budget Group, working on the next generation of
+          loyalty for one of the world&apos;s largest mobility brands.
+        </p>
+
+        <p className="mb-6">
+          Three companies. Three industries. Retail, home appliances,
+          mobility. Country roles, regional roles, global roles.
+          Poland, Sweden, the UK.
+        </p>
+
+        <p>
+          This blog is where I write about what I&apos;ve learned — and what
+          I&apos;m still figuring out.
+        </p>
       </div>
     </div>
   )
