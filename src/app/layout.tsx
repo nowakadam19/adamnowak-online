@@ -51,11 +51,20 @@ export const metadata: Metadata = {
     description: 'Customer loyalty is full of noise. This is the signal.',
     siteName: 'Adam Nowak',
     locale: 'en_GB',
+    images: [
+      {
+        url: '/og-default.png',
+        width: 1200,
+        height: 630,
+        alt: 'adamnowak.online — Customer loyalty intelligence',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Adam Nowak — Customer Loyalty & CRM Intelligence',
     description: 'Customer loyalty is full of noise. This is the signal.',
+    images: ['/og-default.png'],
   },
 }
 
