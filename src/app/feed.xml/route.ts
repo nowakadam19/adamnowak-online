@@ -1,6 +1,6 @@
 import { getAllPosts } from '@/lib/posts'
 
-const BASE_URL = 'https://adamnowak.online'
+const BASE_URL = 'https://www.adamnowak.online'
 
 function escapeXml(str: string): string {
   return str
