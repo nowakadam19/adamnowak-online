@@ -19,7 +19,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const post = getAllPosts().find(p => p.slug === slug)
   if (!post) return {}
-  return { title: post.title, description: post.excerpt }
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      url: `https://adamnowak.online/blog/${slug}`,
+      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt,
+      images: ['/og-default.png'],
+    },
+  }
 }
 
 function PostShell({
