@@ -89,7 +89,7 @@ const jsonLd = {
         'Net Promoter Score',
         'Customer Data Platforms',
       ],
-      sameAs: ['https://www.linkedin.com/in/adamnowak'],
+      sameAs: ['https://www.linkedin.com/in/adam-nowak'],
     },
     {
       '@type': 'WebSite',

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 
 const NAV_LINKS = [
-  { href: 'https://linkedin.com/in/adamnowak', label: 'LinkedIn', external: true },
+  { href: 'https://linkedin.com/in/adam-nowak', label: 'LinkedIn', external: true },
 ]
 
 export default function Footer() {
