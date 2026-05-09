@@ -23,7 +23,8 @@ export default function Header() {
           className="font-display text-[14px] font-extrabold tracking-[0.14em] uppercase no-underline"
           style={{ color: 'var(--ink)', fontFamily: 'var(--font-syne)' }}
         >
-          Adam<span style={{ color: 'var(--amber)' }}>.</span>Nowak
+          <span style={{ color: 'var(--ink)' }}>Adam.</span>
+          <span style={{ color: 'var(--amber)' }}>Nowak</span>
         </Link>
 
         {/* Desktop nav */}
