@@ -9,6 +9,7 @@ const postsDir = path.join(process.cwd(), 'src/content/posts')
 export interface PostMeta {
   slug: string
   title: string
+  titleHtml?: string
   date: string
   excerpt: string
   tags: string[]
@@ -33,6 +34,7 @@ export function getAllPosts(): PostMeta[] {
       return {
         slug,
         title: data.title ?? slug,
+        titleHtml: data.titleHtml,
         date: data.date ?? '',
         excerpt: data.excerpt ?? '',
         tags: data.tags ?? [],
@@ -57,6 +59,7 @@ export async function getPost(slug: string): Promise<Post | null> {
   return {
     slug,
     title: data.title ?? slug,
+    titleHtml: data.titleHtml,
     date: data.date ?? '',
     excerpt: data.excerpt ?? '',
     tags: data.tags ?? [],

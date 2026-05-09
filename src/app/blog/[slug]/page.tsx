@@ -39,12 +39,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 function PostShell({
   title,
+  titleHtml,
   date,
   tags,
   readTime,
   children,
 }: {
   title: string
+  titleHtml?: string
   date: string
   tags: string[]
   readTime: number
@@ -92,19 +94,34 @@ function PostShell({
               {tags.join(' · ')}
             </div>
           )}
-          <h1
-            className="mb-6"
-            style={{
-              fontFamily: 'var(--font-cormorant)',
-              fontSize: 'clamp(38px, 4vw, 52px)',
-              fontWeight: 400,
-              lineHeight: 1.1,
-              letterSpacing: '-0.02em',
-              color: 'var(--ink)',
-            }}
-          >
-            {title}
-          </h1>
+          {titleHtml ? (
+            <h1
+              className="mb-6"
+              style={{
+                fontFamily: 'var(--font-cormorant)',
+                fontSize: 'clamp(38px, 4vw, 52px)',
+                fontWeight: 400,
+                lineHeight: 1.1,
+                letterSpacing: '-0.02em',
+                color: 'var(--ink)',
+              }}
+              dangerouslySetInnerHTML={{ __html: titleHtml }}
+            />
+          ) : (
+            <h1
+              className="mb-6"
+              style={{
+                fontFamily: 'var(--font-cormorant)',
+                fontSize: 'clamp(38px, 4vw, 52px)',
+                fontWeight: 400,
+                lineHeight: 1.1,
+                letterSpacing: '-0.02em',
+                color: 'var(--ink)',
+              }}
+            >
+              {title}
+            </h1>
+          )}
           <div
             className="flex items-center gap-3"
             style={{
@@ -141,6 +158,7 @@ export default async function PostPage({ params }: Props) {
     return (
       <PostShell
         title={meta.title}
+        titleHtml={meta.titleHtml}
         date={meta.date}
         tags={meta.tags}
         readTime={meta.readTime}
@@ -156,6 +174,7 @@ export default async function PostPage({ params }: Props) {
   return (
     <PostShell
       title={post.title}
+      titleHtml={post.titleHtml}
       date={post.date}
       tags={post.tags}
       readTime={post.readTime}
