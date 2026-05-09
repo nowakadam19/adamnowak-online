@@ -53,10 +53,15 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             letterSpacing: '-0.02em',
             color: 'var(--ink)',
           }}
-          dangerouslySetInnerHTML={{
-            __html: '<em style="font-style:italic;font-weight:400">Customer loyalty is full of noise.</em><br><span style="color:var(--amber)">This is the signal.</span>',
-          }}
-        />
+        >
+          <em style={{ fontStyle: 'italic', fontWeight: 400 }}>
+            Customer loyalty
+            <br className="sm:hidden" />
+            {' '}is full of noise.
+          </em>
+          <br />
+          <span style={{ color: 'var(--amber)' }}>This is the signal.</span>
+        </h1>
 
         <p
           className="animate-fade-up-3 mb-12"
