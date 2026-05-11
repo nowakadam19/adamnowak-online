@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { getAllPillars } from '@/lib/loyalty-system'
 import type { Metadata } from 'next'
 
-const SITE_URL = 'https://adamnowak.online'
+const SITE_URL = 'https://www.adamnowak.online'
 
 export const metadata: Metadata = {
   title: 'The Loyalty System | Adam Nowak',

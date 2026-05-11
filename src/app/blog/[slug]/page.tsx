@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { getPost, getAllPosts } from '@/lib/posts'
 
 const postsDir = path.join(process.cwd(), 'src/content/posts')
-const SITE_URL = 'https://adamnowak.online'
+const SITE_URL = 'https://www.adamnowak.online'
 
 interface Props {
   params: Promise<{ slug: string }>
