@@ -19,16 +19,8 @@ export default function Header() {
         style={{ background: 'var(--paper)', borderColor: 'var(--border)' }}
       >
         <Link href="/" className="no-underline">
-          <span
-            style={{
-              fontFamily: 'var(--font-cormorant)',
-              fontStyle: 'italic',
-              fontSize: '1.25rem',
-              fontWeight: 600,
-              letterSpacing: '0.01em',
-            }}
-          >
-            <span style={{ color: 'var(--ink)' }}>Adam </span>
+          <span style={{ fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.08em' }}>
+            <span style={{ color: 'var(--ink)' }}>Adam.</span>
             <span style={{ color: 'var(--amber)' }}>Nowak</span>
           </span>
         </Link>
