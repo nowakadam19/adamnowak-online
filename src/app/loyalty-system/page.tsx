@@ -41,12 +41,12 @@ export default function LoyaltySystemPage() {
       {/* Hero */}
       <section className="bg-[var(--ink)] text-[var(--paper)] px-6 py-24 md:py-32">
         <div className="max-w-3xl mx-auto">
-          <p className="font-display text-xs tracking-[0.2em] uppercase text-[var(--amber)] mb-6">
+          <p className="font-display text-xs tracking-[0.2em] uppercase text-[var(--green)] mb-6">
             The Loyalty System
           </p>
           <h1 className="font-serif text-4xl md:text-6xl leading-tight mb-8">
             The biggest mistake in loyalty{' '}
-            <em className="text-[var(--amber)] not-italic">
+            <em className="text-[var(--green)] not-italic">
               is a missing system.
             </em>
           </h1>
@@ -76,7 +76,7 @@ export default function LoyaltySystemPage() {
                 href={`/loyalty-system/${pillar.slug}`}
                 className="group flex gap-8 py-10 items-start hover:opacity-100 transition-opacity"
               >
-                <span className="font-display text-5xl text-[var(--ink)]/10 group-hover:text-[var(--amber)] transition-colors leading-none pt-1 min-w-[3rem]">
+                <span className="font-display text-5xl text-[var(--ink)]/10 group-hover:text-[var(--green)] transition-colors leading-none pt-1 min-w-[3rem]">
                   {String(pillar.pillar).padStart(2, '0')}
                 </span>
                 <div className="flex-1">

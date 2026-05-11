@@ -10,7 +10,7 @@ export default function Footer() {
   return (
     <footer
       className="px-6 md:px-12 pt-10 pb-8 border-t-2"
-      style={{ background: 'var(--ink)', borderColor: 'var(--amber)' }}
+      style={{ background: 'var(--ink)', borderColor: 'var(--green)' }}
     >
       <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
         <Link
@@ -25,7 +25,7 @@ export default function Footer() {
             color: 'rgba(245,240,232,0.6)',
           }}
         >
-          Adam<span style={{ color: 'var(--amber)' }}>.</span>Nowak
+          Adam<span style={{ color: 'var(--green)' }}>.</span>Nowak
         </Link>
 
         <nav>
@@ -44,7 +44,7 @@ export default function Footer() {
                     textTransform: 'uppercase',
                     color: 'rgba(245,240,232,0.4)',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--amber)')}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--green)')}
                   onMouseLeave={e => (e.currentTarget.style.color = 'rgba(245,240,232,0.4)')}
                 >
                   {label}

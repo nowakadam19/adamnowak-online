@@ -37,7 +37,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             }}
           >
             <span style={{ color: 'var(--ink)' }}>Adam </span>
-            <span style={{ color: 'var(--amber)' }}>Nowak</span>
+            <span style={{ color: 'var(--green)' }}>Nowak</span>
           </div>
           <div
             style={{
@@ -71,7 +71,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
             {' '}is full of noise.
           </em>
           <br />
-          <span style={{ color: 'var(--amber)' }}>This is the signal.</span>
+          <span style={{ color: 'var(--green)' }}>This is the signal.</span>
         </h1>
 
         <p
@@ -128,7 +128,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               color: 'var(--muted)',
             }}
           >
-            <span style={{ width: '20px', height: '1px', background: 'var(--amber)', display: 'inline-block' }} />
+            <span style={{ width: '20px', height: '1px', background: 'var(--green)', display: 'inline-block' }} />
             Latest posts
           </div>
 
@@ -141,7 +141,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               fontWeight: 600,
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
-              color: 'var(--amber)',
+              color: 'var(--green)',
             }}
           >
             All articles
@@ -175,7 +175,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
                         fontWeight: 700,
                         letterSpacing: '0.12em',
                         textTransform: 'uppercase',
-                        color: 'var(--amber)',
+                        color: 'var(--green)',
                       }}
                     >
                       {post.tags.join(' · ')}
@@ -247,7 +247,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
                 color: 'rgba(255,255,255,0.88)',
               }}
             >
-              <span style={{ width: '20px', height: '1px', background: 'var(--amber)', display: 'inline-block' }} />
+              <span style={{ width: '20px', height: '1px', background: 'var(--green)', display: 'inline-block' }} />
               The Loyalty System
             </div>
           </div>
@@ -263,7 +263,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               color: 'var(--paper)',
             }}
             dangerouslySetInnerHTML={{
-              __html: 'New to loyalty marketing?<br><em style="font-style:italic;color:var(--amber-on-dark)">Start here.</em>',
+              __html: 'New to loyalty marketing?<br><em style="font-style:italic;color:var(--green-on-dark)">Start here.</em>',
             }}
           />
 
@@ -371,7 +371,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               color: 'var(--muted)',
             }}
           >
-            <span style={{ width: '20px', height: '1px', background: 'var(--amber)', display: 'inline-block' }} />
+            <span style={{ width: '20px', height: '1px', background: 'var(--green)', display: 'inline-block' }} />
             About
           </div>
 
@@ -386,7 +386,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               letterSpacing: '-0.01em',
             }}
             dangerouslySetInnerHTML={{
-              __html: "I've spent 15+ years at the intersection of CRM, loyalty, and human behaviour — across EMEA, NAM, and APAC. I write to make this field <em style=\"font-style:italic;color:var(--amber)\">simpler and more honest</em> than most people leave it.",
+              __html: "I've spent 15+ years at the intersection of CRM, loyalty, and human behaviour — across EMEA, NAM, and APAC. I write to make this field <em style=\"font-style:italic;color:var(--green)\">simpler and more honest</em> than most people leave it.",
             }}
           />
         </div>

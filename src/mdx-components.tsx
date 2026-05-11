@@ -42,7 +42,7 @@ export function useMDXComponents(): MDXComponents {
     a: ({ href, children }) => (
       <a
         href={href}
-        style={{ color: 'var(--amber)', textDecoration: 'underline', textUnderlineOffset: '3px' }}
+        style={{ color: 'var(--green)', textDecoration: 'underline', textUnderlineOffset: '3px' }}
       >
         {children}
       </a>
@@ -58,7 +58,7 @@ export function useMDXComponents(): MDXComponents {
     blockquote: ({ children }) => (
       <blockquote
         style={{
-          borderLeft: '2px solid var(--amber)',
+          borderLeft: '2px solid var(--green)',
           paddingLeft: '1.5rem',
           marginLeft: 0,
           marginRight: 0,

@@ -63,7 +63,7 @@ const MDX_COMPONENTS = {
   li: (props: React.HTMLAttributes<HTMLLIElement>) => (
     <li
       {...props}
-      className="text-[15px] leading-[1.8] text-[var(--ink)]/70 pl-4 relative before:content-['—'] before:absolute before:left-0 before:text-[var(--amber)]"
+      className="text-[15px] leading-[1.8] text-[var(--ink)]/70 pl-4 relative before:content-['—'] before:absolute before:left-0 before:text-[var(--green)]"
     />
   ),
 }
@@ -142,7 +142,7 @@ export default async function PillarPage({ params }: Props) {
 
             {/* Header */}
             <header className="mb-14 relative">
-              <p className="font-display text-[10px] tracking-[0.2em] uppercase text-[var(--amber)] mb-4">
+              <p className="font-display text-[10px] tracking-[0.2em] uppercase text-[var(--green)] mb-4">
                 Pillar {String(pillar.pillar).padStart(2, '0')} of 06
               </p>
               <h1 className="font-serif text-3xl md:text-[42px] leading-tight text-[var(--ink)] max-w-xl mb-4">

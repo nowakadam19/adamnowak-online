@@ -56,7 +56,7 @@ export default function BlogPage() {
                           fontWeight: 700,
                           letterSpacing: '0.12em',
                           textTransform: 'uppercase',
-                          color: 'var(--amber)',
+                          color: 'var(--green)',
                         }}
                       >
                         {post.tags.join(' · ')}

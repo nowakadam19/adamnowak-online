@@ -21,7 +21,7 @@ export default function Header() {
         <Link href="/" className="no-underline">
           <span style={{ fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.08em' }}>
             <span style={{ color: 'var(--ink)' }}>Adam.</span>
-            <span style={{ color: 'var(--amber)' }}>Nowak</span>
+            <span style={{ color: 'var(--green)' }}>Nowak</span>
           </span>
         </Link>
 
@@ -33,7 +33,7 @@ export default function Header() {
               href={href}
               className="text-[11px] font-bold tracking-[0.1em] uppercase transition-colors duration-200 no-underline"
               style={{ fontFamily: 'var(--font-syne)', color: 'var(--muted)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'var(--amber)')}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--green)')}
               onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
             >
               {label}

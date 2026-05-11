@@ -88,7 +88,7 @@ function PostShell({
                 fontWeight: 700,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
-                color: 'var(--amber)',
+                color: 'var(--green)',
               }}
             >
               {tags.join(' · ')}
