@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { getPost, getAllPosts } from '@/lib/posts'
 
 const postsDir = path.join(process.cwd(), 'src/content/posts')
+const SITE_URL = 'https://adamnowak.online'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -19,20 +20,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const post = getAllPosts().find(p => p.slug === slug)
   if (!post) return {}
+
+  const url = `${SITE_URL}/blog/${slug}`
+  const ogImage = `${SITE_URL}/og-default.png`
+
   return {
-    title: post.title,
+    title: `${post.title} | Adam Nowak`,
     description: post.excerpt,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
-      title: post.title,
+      title: `${post.title} | Adam Nowak`,
       description: post.excerpt,
-      url: `https://adamnowak.online/blog/${slug}`,
-      images: [{ url: '/og-default.png', width: 1200, height: 630 }],
+      url,
+      type: 'article',
+      publishedTime: post.date,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
+      title: `${post.title} | Adam Nowak`,
       description: post.excerpt,
-      images: ['/og-default.png'],
+      images: [ogImage],
     },
   }
 }

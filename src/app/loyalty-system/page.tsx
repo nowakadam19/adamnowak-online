@@ -2,15 +2,29 @@ import Link from 'next/link'
 import { getAllPillars } from '@/lib/loyalty-system'
 import type { Metadata } from 'next'
 
+const SITE_URL = 'https://adamnowak.online'
+
 export const metadata: Metadata = {
-  title: 'The Loyalty System — Adam Nowak',
+  title: 'The Loyalty System | Adam Nowak',
   description:
     'The biggest mistake in loyalty is a missing system. Six pillars for practitioners who want to build customer loyalty that actually lasts.',
+  alternates: {
+    canonical: `${SITE_URL}/loyalty-system`,
+  },
   openGraph: {
-    title: 'The Loyalty System',
+    type: 'website',
+    title: 'The Loyalty System | Adam Nowak',
     description:
       'Six pillars for practitioners who want to build customer loyalty that actually lasts.',
-    url: 'https://adamnowak.online/loyalty-system',
+    url: `${SITE_URL}/loyalty-system`,
+    images: [{ url: `${SITE_URL}/og-default.png`, width: 1200, height: 630, alt: 'The Loyalty System — Adam Nowak' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'The Loyalty System | Adam Nowak',
+    description:
+      'Six pillars for practitioners who want to build customer loyalty that actually lasts.',
+    images: [`${SITE_URL}/og-default.png`],
   },
 }
 

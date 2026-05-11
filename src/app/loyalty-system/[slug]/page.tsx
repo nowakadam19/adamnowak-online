@@ -9,6 +9,8 @@ import {
 } from '@/lib/loyalty-system'
 import type { Metadata } from 'next'
 
+const SITE_URL = 'https://adamnowak.online'
+
 interface Props {
   params: Promise<{ slug: string }>
 }
@@ -21,13 +23,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const pillar = getPillar(slug)
   if (!pillar) return {}
+
+  const url = `${SITE_URL}/loyalty-system/${pillar.slug}`
+  const ogImage = `${SITE_URL}/og-default.png`
+
   return {
-    title: `${pillar.title} — The Loyalty System`,
+    title: `${pillar.title} | Adam Nowak`,
     description: pillar.description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
-      title: pillar.title,
+      type: 'article',
+      title: `${pillar.title} | Adam Nowak`,
       description: pillar.description,
-      url: `https://adamnowak.online/loyalty-system/${pillar.slug}`,
+      url,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: pillar.title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${pillar.title} | Adam Nowak`,
+      description: pillar.description,
+      images: [ogImage],
     },
   }
 }
