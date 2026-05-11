@@ -359,6 +359,7 @@ export default function AboutPage() {
             together — LinkedIn is the best place to reach me.
           </p>
 
+          <a
             href="https://www.linkedin.com/in/adam-nowak/"
             target="_blank"
             rel="noopener noreferrer"
