@@ -56,7 +56,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
         >
           <em style={{ fontStyle: 'italic', fontWeight: 400 }}>
             Customer loyalty
-            <br className="sm:hidden" />
+            <br />
             {' '}is full of noise.
           </em>
           <br />
