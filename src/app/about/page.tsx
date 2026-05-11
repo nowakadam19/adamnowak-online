@@ -3,14 +3,14 @@ import type { Metadata } from 'next'
 const SITE_URL = 'https://www.adamnowak.online'
 
 export const metadata: Metadata = {
-  title: 'About | Adam Nowak',
+  title: 'About',
   description:
     'Customer loyalty and CRM strategist. 15+ years building programs across EMEA — IKEA FAMILY, Electrolux, Avis Budget Group International.',
   alternates: {
     canonical: `${SITE_URL}/about`,
   },
   openGraph: {
-    title: 'About | Adam Nowak',
+    title: 'About',
     description:
       'Customer loyalty and CRM strategist. 15+ years building programs across EMEA — IKEA FAMILY, Electrolux, Avis Budget Group International.',
     url: `${SITE_URL}/about`,
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'About | Adam Nowak',
+    title: 'About',
     description:
       'Customer loyalty and CRM strategist. 15+ years building programs across EMEA — IKEA FAMILY, Electrolux, Avis Budget Group International.',
     images: [`${SITE_URL}/og-default.png`],

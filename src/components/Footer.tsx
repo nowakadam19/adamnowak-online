@@ -1,12 +1,15 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const NAV_LINKS = [
   { href: 'https://linkedin.com/in/adam-nowak', label: 'LinkedIn', external: true },
 ]
 
 export default function Footer() {
+  const pathname = usePathname()
+
   return (
     <footer
       className="px-6 md:px-12 pt-10 pb-8 border-t-2"
@@ -67,21 +70,23 @@ export default function Footer() {
         </span>
       </div>
 
-      <p
-        style={{
-          fontFamily: 'var(--font-inter)',
-          fontSize: '12px',
-          lineHeight: 1.6,
-          color: 'rgba(245,240,232,0.35)',
-          borderTop: '1px solid rgba(245,240,232,0.08)',
-          paddingTop: '20px',
-          margin: 0,
-        }}
-      >
-        Content on this site is AI-assisted. I take care to ensure accuracy, but errors may appear.
-        This site is primarily a personal learning project — please read critically and verify
-        information independently.
-      </p>
+      {pathname !== '/about' && (
+        <p
+          style={{
+            fontFamily: 'var(--font-inter)',
+            fontSize: '12px',
+            lineHeight: 1.6,
+            color: 'rgba(245,240,232,0.35)',
+            borderTop: '1px solid rgba(245,240,232,0.08)',
+            paddingTop: '20px',
+            margin: 0,
+          }}
+        >
+          Content on this site is AI-assisted. I take care to ensure accuracy, but errors may appear.
+          This site is primarily a personal learning project — please read critically and verify
+          information independently.
+        </p>
+      )}
     </footer>
   )
 }
