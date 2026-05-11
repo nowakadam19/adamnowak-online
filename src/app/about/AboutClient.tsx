@@ -88,6 +88,7 @@ export default function AboutClient() {
               boxShadow: '0 4px 24px rgba(10,10,8,0.10)',
               width: '200px',
               height: '250px',
+              filter: 'saturate(0.85) brightness(1.02)',
             }}
           />
         </div>
