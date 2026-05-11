@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ogImage = `${SITE_URL}/og-default.png`
 
   return {
-    title: `${post.title} | Adam Nowak`,
+    title: post.title,
     description: post.excerpt,
     alternates: {
       canonical: url,
