@@ -25,22 +25,33 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
         className="flex flex-col justify-center min-h-screen mx-auto max-w-[760px] px-6 md:px-12"
         style={{ paddingTop: '60px' }}
       >
-        <div
-          className="animate-fade-up-1 flex items-center gap-3 mb-8"
-          style={{
-            fontFamily: 'var(--font-syne)',
-            fontSize: '11px',
-            fontWeight: 700,
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            color: 'var(--amber)',
-          }}
-        >
-          <span
-            className="block shrink-0"
-            style={{ width: '28px', height: '1px', background: 'var(--amber)' }}
-          />
-          Customer Loyalty Intelligence
+        <div className="animate-fade-up-1 mb-8">
+          <div
+            style={{
+              fontFamily: 'var(--font-cormorant)',
+              fontStyle: 'italic',
+              fontWeight: 400,
+              fontSize: 'clamp(28px, 3.5vw, 40px)',
+              lineHeight: 1.1,
+              marginBottom: '4px',
+            }}
+          >
+            <span style={{ color: 'var(--ink)' }}>Adam </span>
+            <span style={{ color: 'var(--amber)' }}>Nowak</span>
+          </div>
+          <div
+            style={{
+              fontFamily: 'var(--font-syne)',
+              fontSize: '9px',
+              fontWeight: 700,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--ink)',
+              opacity: 0.4,
+            }}
+          >
+            Customer Loyalty Intelligence
+          </div>
         </div>
 
         <h1
