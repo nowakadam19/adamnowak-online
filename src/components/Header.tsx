@@ -18,13 +18,19 @@ export default function Header() {
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-[60px] px-6 md:px-12 border-b"
         style={{ background: 'var(--paper)', borderColor: 'var(--border)' }}
       >
-        <Link
-          href="/"
-          className="font-display text-[14px] font-extrabold tracking-[0.14em] uppercase no-underline"
-          style={{ color: 'var(--ink)', fontFamily: 'var(--font-syne)' }}
-        >
-          <span style={{ color: 'var(--ink)' }}>Adam.</span>
-          <span style={{ color: 'var(--amber)' }}>Nowak</span>
+        <Link href="/" className="no-underline">
+          <span
+            style={{
+              fontFamily: 'var(--font-cormorant)',
+              fontStyle: 'italic',
+              fontSize: '1.25rem',
+              fontWeight: 600,
+              letterSpacing: '0.01em',
+            }}
+          >
+            <span style={{ color: 'var(--ink)' }}>Adam </span>
+            <span style={{ color: 'var(--amber)' }}>Nowak</span>
+          </span>
         </Link>
 
         {/* Desktop nav */}
