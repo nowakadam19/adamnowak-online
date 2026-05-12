@@ -28,7 +28,7 @@ const seasons = [
       'Outdoor eating — balconies, BBQ, picnics',
       'Home renovation and repair',
       'Family reunions and guests visiting',
-      'Children's summer holidays',
+      "Children's summer holidays",
     ],
     pains: [
       'High activity, low attention — everything competes',

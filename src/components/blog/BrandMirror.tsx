@@ -10,11 +10,11 @@ const pairs = [
   },
   {
     brand: 'Exclusive member benefits.',
-    customer: 'Things you decided I'd want.',
+    customer: "Things you decided I'd want.",
     comment: 'Exclusivity defined by the brand rarely matches exclusivity felt by the member.',
   },
   {
-    brand: 'You've been selected for our VIP tier.',
+    brand: "You've been selected for our VIP tier.",
     customer: 'You noticed I spend a lot.',
     comment: 'Recognition lands when it feels personal. This one feels like a spreadsheet.',
   },
@@ -25,7 +25,7 @@ const pairs = [
   },
   {
     brand: 'We value your loyalty.',
-    customer: 'Please don't leave.',
+    customer: "Please don't leave.",
     comment: 'The sentence was written for the brand. The member reads the subtext.',
   },
 ]
