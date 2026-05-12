@@ -60,9 +60,9 @@ const seasons = [
     activities: [
       'Christmas preparation — gifts, food, decoration',
       'Family gatherings and hosting',
-      'New Year's resolutions and planning',
+      "New Year's resolutions and planning",
       'Increased time at home — books, TV, board games',
-      'Valentine's Day',
+      "Valentine's Day",
     ],
     pains: [
       'Decision overload during gifting season',
