@@ -7,6 +7,7 @@ const NAV_LINKS = [
   { href: '/blog', label: 'Blog' },
   { href: '/loyalty-system', label: 'Loyalty System' },
   { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
 ]
 
 export default function Header() {
