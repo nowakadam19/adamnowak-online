@@ -155,6 +155,34 @@ function PostShell({
   )
 }
 
+function ArticleJsonLd({ title, excerpt, date, slug }: { title: string; excerpt: string; date: string; slug: string }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description: excerpt,
+    datePublished: date,
+    author: {
+      '@type': 'Person',
+      name: 'Adam Nowak',
+      url: `${SITE_URL}/about`,
+    },
+    publisher: {
+      '@type': 'Person',
+      name: 'Adam Nowak',
+      url: SITE_URL,
+    },
+    url: `${SITE_URL}/blog/${slug}`,
+    image: `${SITE_URL}/og-default.png`,
+  }
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  )
+}
+
 export default async function PostPage({ params }: Props) {
   const { slug } = await params
   const meta = getAllPosts().find(p => p.slug === slug)
@@ -166,15 +194,18 @@ export default async function PostPage({ params }: Props) {
   if (isMdx) {
     const { default: Post } = await import(`@/content/posts/${slug}.mdx`)
     return (
-      <PostShell
-        title={meta.title}
-        titleHtml={meta.titleHtml}
-        date={meta.date}
-        tags={meta.tags}
-        readTime={meta.readTime}
-      >
-        <Post />
-      </PostShell>
+      <>
+        <ArticleJsonLd title={meta.title} excerpt={meta.excerpt} date={meta.date} slug={slug} />
+        <PostShell
+          title={meta.title}
+          titleHtml={meta.titleHtml}
+          date={meta.date}
+          tags={meta.tags}
+          readTime={meta.readTime}
+        >
+          <Post />
+        </PostShell>
+      </>
     )
   }
 
@@ -182,17 +213,20 @@ export default async function PostPage({ params }: Props) {
   if (!post) notFound()
 
   return (
-    <PostShell
-      title={post.title}
-      titleHtml={post.titleHtml}
-      date={post.date}
-      tags={post.tags}
-      readTime={post.readTime}
-    >
-      <div
-        className="prose max-w-none"
-        dangerouslySetInnerHTML={{ __html: post.contentHtml }}
-      />
-    </PostShell>
+    <>
+      <ArticleJsonLd title={post.title} excerpt={post.excerpt} date={post.date} slug={slug} />
+      <PostShell
+        title={post.title}
+        titleHtml={post.titleHtml}
+        date={post.date}
+        tags={post.tags}
+        readTime={post.readTime}
+      >
+        <div
+          className="prose max-w-none"
+          dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+        />
+      </PostShell>
+    </>
   )
 }
