@@ -86,23 +86,42 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
           Practical thinking on loyalty, CRM, and customer marketing — for practitioners who want clarity, not complexity.
         </p>
 
-        <Link
-          href="/blog"
-          className="animate-fade-up-4 inline-flex items-center gap-2 no-underline transition-colors duration-200"
-          style={{
-            fontFamily: 'var(--font-syne)',
-            fontSize: '11px',
-            fontWeight: 700,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: 'var(--ink)',
-            border: '1.5px solid var(--ink)',
-            background: 'transparent',
-            padding: '10px 20px',
-          }}
-        >
-          Explore the blog →
-        </Link>
+        <div className="animate-fade-up-4 inline-flex items-center gap-4">
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 no-underline transition-colors duration-200"
+            style={{
+              fontFamily: 'var(--font-syne)',
+              fontSize: '11px',
+              fontWeight: 700,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: 'var(--ink)',
+              border: '1.5px solid var(--ink)',
+              background: 'transparent',
+              padding: '10px 20px',
+            }}
+          >
+            Explore the blog →
+          </Link>
+          <Link
+            href="/loyalty-system"
+            className="inline-flex items-center gap-2 no-underline transition-colors duration-200"
+            style={{
+              fontFamily: 'var(--font-syne)',
+              fontSize: '11px',
+              fontWeight: 700,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: 'var(--ink)',
+              border: '1.5px solid var(--ink)',
+              background: 'transparent',
+              padding: '10px 20px',
+            }}
+          >
+            Loyalty System →
+          </Link>
+        </div>
       </section>
 
       <hr style={{ border: 'none', borderTop: '1px solid var(--border)', maxWidth: '760px', margin: '0 auto' }} />
