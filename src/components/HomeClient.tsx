@@ -102,7 +102,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               padding: '10px 20px',
             }}
           >
-            The blog →
+            Blog →
           </Link>
           <Link
             href="/loyalty-system"
