@@ -142,21 +142,6 @@ export default function ContactPage() {
       <p className="text-sm text-ink/45 max-w-[300px] leading-[1.8] mb-10">
         Strategy, speaking, partnerships — or something else.<br />I respond personally.
       </p>
-      <div style={{
-        background: "rgba(10,10,8,0.04)",
-        border: "1px solid rgba(10,10,8,0.08)",
-        padding: "10px 16px",
-        marginBottom: "24px",
-        fontSize: "11px",
-        color: "rgba(10,10,8,0.45)",
-        letterSpacing: "0.01em",
-        lineHeight: "1.7",
-        maxWidth: "320px",
-        textAlign: "center"
-      }}>
-        🧪 Beta — this contact form is being tested.<br/>
-        Responses are not yet active. Coming soon.
-      </div>
       <button onClick={startChat}
         className="text-[11px] tracking-[0.18em] uppercase bg-ink text-paper px-10 py-3.5 hover:bg-green transition-colors duration-200">
         Start the conversation
