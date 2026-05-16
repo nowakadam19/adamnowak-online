@@ -2,7 +2,7 @@ export default function BrandPersonalityMatrix() {
   return (
     <div className="my-8 flex justify-center">
       <svg viewBox="0 0 640 480" width="640" height="480" xmlns="http://www.w3.org/2000/svg" style={{ fontFamily: 'Inter, sans-serif', maxWidth: '100%' }}>
-        <rect width="640" height="480" fill="#EFEFEB"/>
+        <rect width="640" height="480" fill="#FAFAF8"/>
         <rect x="80" y="40" width="240" height="200" fill="#1E4530" opacity="0.08"/>
         <rect x="320" y="40" width="240" height="200" fill="#1E4530" opacity="0.18"/>
         <rect x="80" y="240" width="240" height="200" fill="#0A0A08" opacity="0.04"/>

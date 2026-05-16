@@ -158,7 +158,7 @@ export default function ContactPage() {
     <main className="min-h-screen bg-paper flex flex-col items-center justify-center px-6 py-16 text-center" style={{ paddingTop: "calc(72px + 60px)" }}>
       <div className="w-12 h-12 rounded-full bg-green flex items-center justify-center mb-7">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-          <path d="M4 11.5L9 16.5L18 7" stroke="#EFEFEB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M4 11.5L9 16.5L18 7" stroke="#FAFAF8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
       <h2 className="font-serif italic text-[clamp(38px,8vw,54px)] leading-tight text-ink mb-4">
@@ -260,7 +260,7 @@ export default function ContactPage() {
             className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-150"
             style={{ background: canSend ? "#0A0A08" : "rgba(10,10,8,0.12)" }}>
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-              <path d="M1 13L13 7L1 1V5.5L9 7L1 8.5V13Z" fill={canSend ? "#EFEFEB" : "rgba(10,10,8,0.25)"}/>
+              <path d="M1 13L13 7L1 1V5.5L9 7L1 8.5V13Z" fill={canSend ? "#FAFAF8" : "rgba(10,10,8,0.25)"}/>
             </svg>
           </button>
         </div>

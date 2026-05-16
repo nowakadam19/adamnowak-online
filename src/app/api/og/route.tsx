@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
             fontWeight: 400,
             fontStyle: 'italic',
             lineHeight: 1.15,
-            color: '#EFEFEB',
+            color: '#FAFAF8',
             maxWidth: '900px',
           }}
         >
@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
               fontSize: '20px',
               fontWeight: 600,
               letterSpacing: '0.06em',
-              color: '#EFEFEB',
+              color: '#FAFAF8',
               opacity: 0.7,
             }}
           >

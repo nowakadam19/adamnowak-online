@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       replyTo: email,
       subject: `New message from ${name} (${emailSource})`,
       html: `
-        <div style="font-family:sans-serif;max-width:560px;padding:32px;background:#EFEFEB">
+        <div style="font-family:sans-serif;max-width:560px;padding:32px;background:#FAFAF8">
           <p style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#1E4530;margin:0 0 24px">
             adamnowak.online · new contact ${emailSource}
           </p>

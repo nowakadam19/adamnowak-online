@@ -8,15 +8,15 @@ export default function LegalSurfaceAreaDiagram() {
         role="img"
         aria-label="Legal Surface Area framework: four surfaces around a program core — Data, Promotion, Value, and Partner"
       >
-        <rect width="700" height="520" fill="#EFEFEB" rx="12" />
+        <rect width="700" height="520" fill="#FAFAF8" rx="12" />
         <line x1="350" y1="148" x2="350" y2="178" stroke="#1E4530" strokeWidth="1.5" strokeOpacity="0.25" strokeDasharray="4 3" />
         <line x1="512" y1="260" x2="442" y2="260" stroke="#1E4530" strokeWidth="1.5" strokeOpacity="0.25" strokeDasharray="4 3" />
         <line x1="350" y1="372" x2="350" y2="342" stroke="#1E4530" strokeWidth="1.5" strokeOpacity="0.25" strokeDasharray="4 3" />
         <line x1="188" y1="260" x2="258" y2="260" stroke="#1E4530" strokeWidth="1.5" strokeOpacity="0.25" strokeDasharray="4 3" />
         <circle cx="350" cy="260" r="82" fill="#1E4530" />
         <circle cx="350" cy="260" r="76" fill="none" stroke="#4CAF7D" strokeWidth="1" strokeOpacity="0.3" />
-        <text x="350" y="251" textAnchor="middle" fill="#EFEFEB" fontFamily="'Cormorant Garamond', Georgia, serif" fontStyle="italic" fontSize="17" fontWeight="600">Legal</text>
-        <text x="350" y="272" textAnchor="middle" fill="#EFEFEB" fontFamily="'Cormorant Garamond', Georgia, serif" fontStyle="italic" fontSize="17" fontWeight="600">Surface Area</text>
+        <text x="350" y="251" textAnchor="middle" fill="#FAFAF8" fontFamily="'Cormorant Garamond', Georgia, serif" fontStyle="italic" fontSize="17" fontWeight="600">Legal</text>
+        <text x="350" y="272" textAnchor="middle" fill="#FAFAF8" fontFamily="'Cormorant Garamond', Georgia, serif" fontStyle="italic" fontSize="17" fontWeight="600">Surface Area</text>
         <text x="350" y="292" textAnchor="middle" fill="#4CAF7D" fontFamily="'Syne', sans-serif" fontSize="9" fontWeight="700" letterSpacing="0.12em">MAP AT T−6</text>
         <rect x="210" y="28" width="280" height="120" rx="8" fill="white" fillOpacity="0.75" stroke="#0A0A08" strokeWidth="1" strokeOpacity="0.08" />
         <rect x="210" y="28" width="280" height="6" rx="8" fill="#1E4530" />
