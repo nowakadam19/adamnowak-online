@@ -29,7 +29,7 @@ export function getAllPosts(): PostMeta[] {
       const raw = fs.readFileSync(path.join(postsDir, file), 'utf8')
       const { data, content } = matter(raw)
       const wordCount = content.trim().split(/\s+/).filter(Boolean).length
-      const readTime = Math.max(1, Math.round(wordCount / 200))
+      const readTime = Math.max(1, Math.ceil(wordCount / 200))
 
       return {
         slug,
@@ -52,7 +52,7 @@ export async function getPost(slug: string): Promise<Post | null> {
   const raw = fs.readFileSync(filePath, 'utf8')
   const { data, content } = matter(raw)
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length
-  const readTime = Math.max(1, Math.round(wordCount / 200))
+  const readTime = Math.max(1, Math.ceil(wordCount / 200))
 
   const processed = await remark().use(html).process(content)
 

@@ -4,6 +4,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getPost, getAllPosts } from '@/lib/posts'
+import ReadingProgressBar from '@/components/blog/ReadingProgressBar'
+import ShareButton from '@/components/blog/ShareButton'
 
 const postsDir = path.join(process.cwd(), 'src/content/posts')
 const SITE_URL = 'https://www.adamnowak.online'
@@ -73,6 +75,7 @@ function PostShell({
       className="mx-auto max-w-[760px] px-6 md:px-12"
       style={{ paddingTop: 'calc(72px + 60px)', paddingBottom: '72px' }}
     >
+      <ReadingProgressBar />
       <Link
         href="/blog"
         className="inline-flex items-center gap-1.5 no-underline mb-12 transition-colors duration-200 text-muted hover:text-amber"
@@ -146,6 +149,8 @@ function PostShell({
             <time dateTime={date}>{formatted}</time>
             <span style={{ color: 'var(--border)' }}>·</span>
             <span>{readTime} min read</span>
+            <span style={{ color: 'var(--border)' }}>·</span>
+            <ShareButton />
           </div>
         </header>
 
