@@ -3,7 +3,7 @@ import path from 'path'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getPost, getAllPosts } from '@/lib/posts'
+import { getPost, getAllPosts, type PostMeta } from '@/lib/posts'
 import ReadingProgressBar from '@/components/blog/ReadingProgressBar'
 import ShareButton from '@/components/blog/ShareButton'
 
@@ -55,6 +55,7 @@ function PostShell({
   date,
   tags,
   readTime,
+  related,
   children,
 }: {
   title: string
@@ -62,6 +63,7 @@ function PostShell({
   date: string
   tags: string[]
   readTime: number
+  related: PostMeta[]
   children: React.ReactNode
 }) {
   const formatted = new Date(date).toLocaleDateString('en-GB', {
@@ -156,6 +158,87 @@ function PostShell({
 
         {children}
       </article>
+
+      {related.length > 0 && (
+        <div style={{ marginTop: '72px', paddingTop: '48px', borderTop: '1px solid var(--border)' }}>
+          <div
+            style={{
+              fontFamily: 'var(--font-syne)',
+              fontSize: '10px',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: 'var(--muted)',
+              marginBottom: '32px',
+            }}
+          >
+            Related
+          </div>
+          {related.map(post => {
+            const postDate = new Date(post.date).toLocaleDateString('en-GB', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })
+            return (
+              <Link
+                key={post.slug}
+                href={`/blog/${post.slug}`}
+                className="block py-6 no-underline group"
+                style={{ borderBottom: '1px solid var(--border)', color: 'inherit' }}
+              >
+                {post.tags.length > 0 && (
+                  <div
+                    className="mb-1.5"
+                    style={{
+                      fontFamily: 'var(--font-syne)',
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      color: 'var(--green)',
+                    }}
+                  >
+                    {post.tags.join(' · ')}
+                  </div>
+                )}
+                <h3
+                  className="mb-2 transition-colors duration-200 group-hover:text-amber"
+                  style={{
+                    fontFamily: 'var(--font-cormorant)',
+                    fontSize: '22px',
+                    fontWeight: 500,
+                    lineHeight: 1.2,
+                    color: 'var(--ink)',
+                  }}
+                >
+                  {post.title}
+                </h3>
+                {post.excerpt && (
+                  <p className="mb-3" style={{ fontSize: '14px', color: 'var(--muted)', lineHeight: 1.65 }}>
+                    {post.excerpt}
+                  </p>
+                )}
+                <div
+                  className="flex items-center gap-3"
+                  style={{
+                    fontFamily: 'var(--font-syne)',
+                    fontSize: '10px',
+                    fontWeight: 600,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: 'var(--muted)',
+                  }}
+                >
+                  <time dateTime={post.date}>{postDate}</time>
+                  <span style={{ color: 'var(--border)' }}>·</span>
+                  <span>{post.readTime} min read</span>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
@@ -188,11 +271,19 @@ function ArticleJsonLd({ title, excerpt, date, slug }: { title: string; excerpt:
   )
 }
 
+function getRelated(slug: string, tags: string[], all: PostMeta[]): PostMeta[] {
+  const others = all.filter(p => p.slug !== slug)
+  const tagged = others.filter(p => p.tags.some(t => tags.includes(t))).slice(0, 3)
+  return tagged.length > 0 ? tagged : others.slice(0, 2)
+}
+
 export default async function PostPage({ params }: Props) {
   const { slug } = await params
-  const meta = getAllPosts().find(p => p.slug === slug)
+  const allPosts = getAllPosts()
+  const meta = allPosts.find(p => p.slug === slug)
   if (!meta) notFound()
 
+  const related = getRelated(slug, meta.tags, allPosts)
   const mdxPath = path.join(postsDir, `${slug}.mdx`)
   const isMdx = fs.existsSync(mdxPath)
 
@@ -207,6 +298,7 @@ export default async function PostPage({ params }: Props) {
           date={meta.date}
           tags={meta.tags}
           readTime={meta.readTime}
+          related={related}
         >
           <Post />
         </PostShell>
@@ -226,6 +318,7 @@ export default async function PostPage({ params }: Props) {
         date={post.date}
         tags={post.tags}
         readTime={post.readTime}
+        related={related}
       >
         <div
           className="prose max-w-none"
