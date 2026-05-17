@@ -28,8 +28,9 @@ const heading = (tag: 'h1' | 'h2' | 'h3' | 'h4') => {
   }
 }
 
-export function useMDXComponents(): MDXComponents {
+export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
+    ...components,
     h1: heading('h1'),
     h2: heading('h2'),
     h3: heading('h3'),
@@ -120,6 +121,21 @@ export function useMDXComponents(): MDXComponents {
       >
         {children}
       </pre>
+    ),
+    table: ({ children }) => (
+      <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: '1.5em', marginBottom: '1.5em', fontSize: '14px', color: 'var(--muted)' }}>
+        {children}
+      </table>
+    ),
+    th: ({ children }) => (
+      <th style={{ display: 'table-cell', textAlign: 'left', paddingRight: '1.5rem', paddingTop: '0.5rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-syne)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink)' }}>
+        {children}
+      </th>
+    ),
+    td: ({ children }) => (
+      <td style={{ display: 'table-cell', paddingRight: '1.5rem', paddingTop: '0.5rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border)', verticalAlign: 'top' }}>
+        {children}
+      </td>
     ),
   }
 }

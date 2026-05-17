@@ -1,8 +1,6 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { remark } from 'remark'
-import html from 'remark-html'
 
 const postsDir = path.join(process.cwd(), 'src/content/posts')
 
@@ -14,10 +12,6 @@ export interface PostMeta {
   excerpt: string
   tags: string[]
   readTime: number
-}
-
-export interface Post extends PostMeta {
-  contentHtml: string
 }
 
 export function getAllPosts(): PostMeta[] {
@@ -44,26 +38,3 @@ export function getAllPosts(): PostMeta[] {
     .sort((a, b) => (a.date < b.date ? 1 : -1))
 }
 
-export async function getPost(slug: string): Promise<Post | null> {
-  const mdxPath = path.join(postsDir, `${slug}.mdx`)
-  const filePath = fs.existsSync(mdxPath) ? mdxPath : path.join(postsDir, `${slug}.md`)
-  if (!fs.existsSync(filePath)) return null
-
-  const raw = fs.readFileSync(filePath, 'utf8')
-  const { data, content } = matter(raw)
-  const wordCount = content.trim().split(/\s+/).filter(Boolean).length
-  const readTime = Math.max(1, Math.ceil(wordCount / 200))
-
-  const processed = await remark().use(html).process(content)
-
-  return {
-    slug,
-    title: data.title ?? slug,
-    titleHtml: data.titleHtml,
-    date: data.date ?? '',
-    excerpt: data.excerpt ?? '',
-    tags: data.tags ?? [],
-    readTime,
-    contentHtml: processed.toString(),
-  }
-}

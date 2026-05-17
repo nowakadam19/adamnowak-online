@@ -3,7 +3,7 @@ import path from 'path'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getPost, getAllPosts, type PostMeta } from '@/lib/posts'
+import { getAllPosts, type PostMeta } from '@/lib/posts'
 import ReadingProgressBar from '@/components/blog/ReadingProgressBar'
 import ShareButton from '@/components/blog/ShareButton'
 
@@ -285,45 +285,21 @@ export default async function PostPage({ params }: Props) {
 
   const related = getRelated(slug, meta.tags, allPosts)
   const mdxPath = path.join(postsDir, `${slug}.mdx`)
-  const isMdx = fs.existsSync(mdxPath)
+  if (!fs.existsSync(mdxPath)) notFound()
 
-  if (isMdx) {
-    const { default: Post } = await import(`@/content/posts/${slug}.mdx`)
-    return (
-      <>
-        <ArticleJsonLd title={meta.title} excerpt={meta.excerpt} date={meta.date} slug={slug} />
-        <PostShell
-          title={meta.title}
-          titleHtml={meta.titleHtml}
-          date={meta.date}
-          tags={meta.tags}
-          readTime={meta.readTime}
-          related={related}
-        >
-          <Post />
-        </PostShell>
-      </>
-    )
-  }
-
-  const post = await getPost(slug)
-  if (!post) notFound()
-
+  const { default: Post } = await import(`@/content/posts/${slug}.mdx`)
   return (
     <>
-      <ArticleJsonLd title={post.title} excerpt={post.excerpt} date={post.date} slug={slug} />
+      <ArticleJsonLd title={meta.title} excerpt={meta.excerpt} date={meta.date} slug={slug} />
       <PostShell
-        title={post.title}
-        titleHtml={post.titleHtml}
-        date={post.date}
-        tags={post.tags}
-        readTime={post.readTime}
+        title={meta.title}
+        titleHtml={meta.titleHtml}
+        date={meta.date}
+        tags={meta.tags}
+        readTime={meta.readTime}
         related={related}
       >
-        <div
-          className="prose max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.contentHtml }}
-        />
+        <Post />
       </PostShell>
     </>
   )
