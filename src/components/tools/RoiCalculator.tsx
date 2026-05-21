@@ -179,7 +179,7 @@ Revenue breakdown:
 
 Assumptions: ${inputs.totalMembers.toLocaleString("en-GB")} members · ${inputs.activePct}% active · ${fmtEur(inputs.avgSpend)} avg spend/year
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Source: adamnowak.online/tools/roi-calculator`
+Source: adamnowak.online/tools/loyalty-roi-calculator`
     navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2500) })
   }
 
