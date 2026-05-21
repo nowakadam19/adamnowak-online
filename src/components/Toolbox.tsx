@@ -22,7 +22,11 @@ export function Toolbox({ pillar, tools = [], toolsJson }: ToolboxProps) {
       style={{ background: "#1E4530" }}
     >
       <div className="flex items-center gap-3 mb-5">
-        <span style={{ fontSize: "1.2rem" }}>🧰</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: "2px" }}>
+          <rect x="1" y="6" width="14" height="9" rx="1.5" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5"/>
+          <path d="M5 6V4.5a3 3 0 0 1 6 0V6" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round"/>
+          <path d="M1 9.5h14" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5"/>
+        </svg>
         <div>
           <div
             className="text-[10px] tracking-[0.16em] uppercase"
