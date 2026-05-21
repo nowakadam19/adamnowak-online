@@ -245,7 +245,7 @@ Source: adamnowak.online/tools/loyalty-roi-calculator`
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-        <div className={`${activeTab === "results" ? "hidden lg:block" : "block"} p-5 lg:border-r`} style={{ borderColor: "var(--border)" }}>
+        <div id="calc-inputs" className={`${activeTab === "results" ? "hidden lg:block" : "block"} p-5 lg:border-r`} style={{ borderColor: "var(--border)" }}>
           <SectionTitle>Programme Size</SectionTitle>
           <SliderInput label="Total enrolled members" tooltip="Total database size — enrolled but not necessarily active" value={inputs.totalMembers} min={10000} max={5000000} step={10000} prefix="  " onChange={set("totalMembers")} />
           <SliderInput label="Active members" tooltip="% who transacted at least once in the past 12 months" value={inputs.activePct} min={5} max={80} step={1} suffix="%" onChange={set("activePct")} />
@@ -286,7 +286,7 @@ Source: adamnowak.online/tools/loyalty-roi-calculator`
           </div>
         </div>
 
-        <div className={`${activeTab === "inputs" ? "hidden lg:block" : "block"} p-5`} style={{ background: "#fafaf8" }}>
+        <div id="calc-outputs" className={`${activeTab === "inputs" ? "hidden lg:block" : "block"} p-5`} style={{ background: "#fafaf8" }}>
           <div className="print-header" style={{ display: "none" }}>
             <div style={{ fontFamily: "Syne, sans-serif", fontSize: "10px", color: "#6b6b68", marginBottom: "4px" }}>
               adamnowak.online/tools/loyalty-roi-calculator
@@ -451,33 +451,12 @@ input[type="range"]::-moz-range-thumb {
 }
 @media print {
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-
-  input[type="range"], textarea, button,
-  details summary, .lg\\:hidden { display: none !important; }
-
+  input[type="range"], textarea, button, details summary { display: none !important; }
   details > div { display: block !important; }
-
-  .grid.grid-cols-1 { display: block !important; }
-
-  .grid.grid-cols-1 > div:first-child { display: none !important; }
-
-  .rounded-lg, [class*="border mb-3"] {
-    break-inside: avoid;
-    margin-bottom: 8px !important;
-    padding: 10px !important;
-  }
-
-  .grid.grid-cols-2 {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px !important;
-  }
-
-  [class*="rounded-md p-3"] { padding: 6px 8px !important; }
-
+  #calc-inputs { display: none !important; }
+  #calc-outputs { display: block !important; width: 100% !important; background: white !important; }
+  .grid { display: block !important; }
   body { font-size: 11px !important; background: white !important; }
-
-  .print-header { display: block !important; margin-bottom: 16px; }
 }
       `}</style>
     </div>
