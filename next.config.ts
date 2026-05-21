@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
         destination: '/sitemap.xml',
         permanent: true,
       },
+      {
+        source: '/tools/roi-calculator',
+        destination: '/tools/loyalty-roi-calculator',
+        permanent: true,
+      },
     ]
   },
 }

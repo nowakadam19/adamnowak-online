@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       from: "ROI Calculator <noreply@adamnowak.online>",
       to: "me@adamnowak.online",
       subject: "ROI Calculator — feedback",
-      text: `New feedback from adamnowak.online/tools/roi-calculator\n\n${message.trim()}\n\n---\nSent at: ${new Date().toISOString()}`,
+      text: `New feedback from adamnowak.online/tools/loyalty-roi-calculator\n\n${message.trim()}\n\n---\nSent at: ${new Date().toISOString()}`,
     })
 
     if (error) {
