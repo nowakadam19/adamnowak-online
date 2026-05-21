@@ -451,12 +451,50 @@ input[type="range"]::-moz-range-thumb {
 }
 @media print {
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  input[type="range"], textarea, button, details summary { display: none !important; }
+
+  /* Hide interactive elements */
+  input[type="range"], textarea, button,
+  details summary, .lg\\:hidden,
+  nav, header { display: none !important; }
+
   details > div { display: block !important; }
-  #calc-inputs { display: none !important; }
-  #calc-outputs { display: block !important; width: 100% !important; background: white !important; }
+
+  /* Reset layout */
   .grid { display: block !important; }
-  body { font-size: 11px !important; background: white !important; }
+  body { font-size: 11px !important; background: white !important; margin: 0; }
+
+  /* Page 1 - Inputs */
+  #calc-inputs {
+    display: block !important;
+    width: 100% !important;
+    page-break-after: always;
+    padding: 20px !important;
+  }
+
+  /* Page 2 - Outputs */
+  #calc-outputs {
+    display: block !important;
+    width: 100% !important;
+    background: white !important;
+    padding: 20px !important;
+  }
+
+  /* Compact spacing */
+  .mb-4 { margin-bottom: 6px !important; }
+  .mb-3 { margin-bottom: 6px !important; }
+  .p-4 { padding: 8px !important; }
+  .p-5 { padding: 12px !important; }
+  .p-3 { padding: 6px !important; }
+
+  /* Cards */
+  [class*="rounded-lg border"] { break-inside: avoid; margin-bottom: 8px !important; }
+  [class*="rounded-md"] { padding: 6px 8px !important; }
+
+  /* Grid 2 cols stays 2 cols */
+  .grid-cols-2 { display: grid !important; grid-template-columns: 1fr 1fr; gap: 6px !important; }
+
+  /* Print header visible */
+  .print-header { display: block !important; margin-bottom: 16px !important; }
 }
       `}</style>
     </div>
