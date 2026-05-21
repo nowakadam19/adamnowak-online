@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { MDXRemote } from 'next-mdx-remote/rsc'
+import { ToolCard } from '@/components/ToolCard'
 import {
   getAllPillars,
   getPillar,
@@ -50,6 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const MDX_COMPONENTS = {
+  ToolCard,
   h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h2
       {...props}
