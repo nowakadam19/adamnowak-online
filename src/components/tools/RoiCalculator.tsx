@@ -287,6 +287,18 @@ Source: adamnowak.online/tools/loyalty-roi-calculator`
         </div>
 
         <div className={`${activeTab === "inputs" ? "hidden lg:block" : "block"} p-5`} style={{ background: "#fafaf8" }}>
+          <div className="print-header" style={{ display: "none" }}>
+            <div style={{ fontFamily: "Syne, sans-serif", fontSize: "10px", color: "#6b6b68", marginBottom: "4px" }}>
+              adamnowak.online/tools/loyalty-roi-calculator
+            </div>
+            <div style={{ fontFamily: "Cormorant Garamond, serif", fontStyle: "italic", fontSize: "20px", color: "#0A0A08" }}>
+              Loyalty Programme ROI Calculator
+            </div>
+            <div style={{ fontSize: "10px", color: "#6b6b68", marginTop: "2px" }}>
+              {new Date().toLocaleDateString("en-GB")}
+            </div>
+          </div>
+
           <div className="rounded-lg p-5 mb-3" style={{ background: "var(--green)" }}>
             <div className="text-[10px] tracking-[0.14em] uppercase mb-1" style={{ color: "rgba(255,255,255,0.55)", fontFamily: "Syne, sans-serif" }}>Required lift to break even</div>
             <div className="leading-none mb-1" style={{ fontFamily: "Cormorant Garamond, serif", fontStyle: "italic", fontWeight: 600, fontSize: "3.2rem", color: "#fff" }}>{fmtPct(r.requiredLift.pct)}</div>
@@ -437,7 +449,36 @@ input[type="range"]::-moz-range-thumb {
   border: 2px solid white;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
-@media print { input[type="range"], textarea, button { display: none !important; } details > div { display: block !important; } body { background: white; } }
+@media print {
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  input[type="range"], textarea, button,
+  details summary, .lg\\:hidden { display: none !important; }
+
+  details > div { display: block !important; }
+
+  .grid.grid-cols-1 { display: block !important; }
+
+  .grid.grid-cols-1 > div:first-child { display: none !important; }
+
+  .rounded-lg, [class*="border mb-3"] {
+    break-inside: avoid;
+    margin-bottom: 8px !important;
+    padding: 10px !important;
+  }
+
+  .grid.grid-cols-2 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px !important;
+  }
+
+  [class*="rounded-md p-3"] { padding: 6px 8px !important; }
+
+  body { font-size: 11px !important; background: white !important; }
+
+  .print-header { display: block !important; margin-bottom: 16px; }
+}
       `}</style>
     </div>
   )
