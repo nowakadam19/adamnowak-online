@@ -3,78 +3,54 @@
 import { useState } from 'react'
 
 export default function FramingEffect() {
-  const [balance, setBalance] = useState(400)
-  const threshold = 1000
-  const pct = Math.round((balance / threshold) * 100)
-  const remaining = threshold - balance
+  const [progress, setProgress] = useState(40)
+  const pts = Math.round(progress * 10)
+  const remaining = 1000 - pts
+  const circumference = 175.9
+  const offset = circumference * (1 - progress / 100)
 
   return (
-    <div className="my-8 border border-[var(--ink)]/10 rounded-xl overflow-hidden font-sans">
-      <div className="px-5 py-4 border-b border-[var(--ink)]/8">
-        <div className="text-[10px] font-medium tracking-widest uppercase text-[var(--ink)]/40 mb-3">
-          Same data — two framings
-        </div>
-        <label className="flex items-center gap-3 text-sm text-[var(--ink)]/60">
-          <span className="w-20">Balance</span>
-          <input
-            type="range" min={50} max={950} step={50}
-            value={balance} onChange={e => setBalance(+e.target.value)}
-            className="w-40"
-          />
-          <span className="font-medium text-[var(--ink)] w-24">{balance.toLocaleString()} / {threshold.toLocaleString()} pts</span>
-        </label>
+    <div className="my-8 font-sans">
+      <div className="flex items-center gap-3 mb-5 text-xs text-[var(--ink)]/50">
+        <span>Progress</span>
+        <input type="range" min={5} max={99} value={progress}
+          onChange={e => setProgress(+e.target.value)} className="flex-1" />
+        <span className="font-semibold text-[var(--ink)] min-w-[32px]">{progress}%</span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-[var(--ink)]/8">
-        {/* Nominal framing */}
-        <div className="p-5">
-          <div className="text-[10px] tracking-widest uppercase text-[var(--ink)]/40 mb-4 font-medium">
-            Nominal framing
-          </div>
-          <div className="rounded-lg border border-[var(--ink)]/10 p-4 bg-[var(--ink)]/[0.02]">
-            <div className="text-xs text-[var(--ink)]/40 mb-1">Your Points Balance</div>
-            <div className="text-4xl font-medium text-[var(--ink)] mb-1">{balance.toLocaleString()}</div>
-            <div className="text-xs text-[var(--ink)]/40">Reward at {threshold.toLocaleString()} points</div>
-          </div>
-          <div className="mt-4 flex items-start gap-2">
-            <span className="text-[#dc2626] text-sm mt-0.5">↓</span>
-            <p className="text-xs text-[var(--ink)]/50 leading-relaxed">
-              Raw number with no emotional context. Brain registers a large gap ({remaining.toLocaleString()} pts). Low urgency.
-            </p>
+      <div className="grid grid-cols-2 gap-5">
+        <div className="bg-[#1A1A18] rounded-3xl p-3">
+          <div className="bg-[var(--paper)] rounded-2xl h-48 flex flex-col items-center justify-center gap-2 px-4">
+            <div className="text-[9px] font-semibold tracking-widest uppercase text-[var(--ink)]/30">
+              Nominal
+            </div>
+            <div className="text-3xl font-semibold text-[var(--ink)]">{pts} pts</div>
+            <div className="text-[10px] text-[var(--ink)]/40 text-center">Reward at 1,000 points</div>
           </div>
         </div>
 
-        {/* Progress framing */}
-        <div className="p-5">
-          <div className="text-[10px] tracking-widest uppercase text-[var(--ink)]/40 mb-4 font-medium">
-            Progress framing
-          </div>
-          <div className="rounded-lg border border-[#4CAF7D]/30 p-4 bg-[#4CAF7D]/[0.04]">
-            <div className="text-xs text-[var(--ink)]/40 mb-2">Your next reward</div>
-            <div className="h-2.5 bg-[var(--ink)]/8 rounded-full overflow-hidden mb-2">
-              <div
-                className="h-full rounded-full bg-[#1E4530] transition-all duration-500"
-                style={{ width: `${pct}%` }}
-              />
+        <div className="bg-[var(--green)] rounded-3xl p-3">
+          <div className="bg-[#E8F5EF] rounded-2xl h-48 flex flex-col items-center justify-center gap-2 px-4">
+            <div className="text-[9px] font-semibold tracking-widest uppercase text-[var(--green)]/60">
+              Progress
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="font-medium text-[var(--ink)]">{pct}% complete</span>
-              <span className="text-[var(--ink)]/50">{remaining.toLocaleString()} pts to go</span>
+            <div className="relative w-16 h-16">
+              <svg viewBox="0 0 70 70" className="w-full h-full -rotate-90">
+                <circle cx="35" cy="35" r="28" fill="none" stroke="#C5E8D5" strokeWidth="6" />
+                <circle cx="35" cy="35" r="28" fill="none" stroke="#1E4530" strokeWidth="6"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={offset}
+                  strokeLinecap="round" />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-[var(--green)]">
+                {progress}%
+              </div>
             </div>
-          </div>
-          <div className="mt-4 flex items-start gap-2">
-            <span className="text-[#4CAF7D] text-sm mt-0.5">↑</span>
-            <p className="text-xs text-[var(--ink)]/50 leading-relaxed">
-              Progress + proximity framing. At {pct}%, the gap feels {pct >= 70 ? 'small and closeable' : pct >= 40 ? 'bridgeable with one visit' : 'visible and growing'}. Higher urgency.
-            </p>
+            <div className="text-[10px] text-[var(--green)]/70 text-center">
+              {remaining > 0 ? `${remaining} pts to reward` : 'Reward unlocked!'}
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className="px-5 py-3 border-t border-[var(--ink)]/8 bg-[var(--ink)]/[0.02]">
-        <p className="text-xs text-[var(--ink)]/50 italic">
-          The gap between these framings grows as the member approaches the reward. At 80%+, the urgency difference is significant.
-        </p>
       </div>
     </div>
   )
