@@ -364,55 +364,57 @@ Source: adamnowak.online/tools/loyalty-roi-calculator`
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 px-5 py-3 border-t" style={{ borderColor: "var(--border)", background: "var(--paper)" }}>
-        {[["↺ Reset defaults", reset], ["Copy results", copyResults], ["Share URL", shareUrl], ["Print / PDF", () => window.print()]].map(([label, fn]) => (
-          <button key={label as string} onClick={fn as () => void}
-            className="text-[11px] tracking-[0.08em] uppercase px-3 py-1.5 rounded border transition-colors"
-            style={{ fontFamily: "Syne, sans-serif", borderColor: "var(--border)", color: "var(--ink)", background: "none" }}>{label as string}</button>
-        ))}
-        {copied && <span className="text-[11px]" style={{ color: "var(--gl)", fontFamily: "Syne, sans-serif" }}>Copied ✓</span>}
-      </div>
-
-      <details open={defsOpen} onToggle={(e) => setDefsOpen((e.target as HTMLDetailsElement).open)} className="border-t" style={{ borderColor: "var(--border)" }}>
-        <summary className="px-5 py-3 cursor-pointer text-[12px] font-medium select-none flex items-center justify-between"
-          style={{ fontFamily: "Syne, sans-serif", color: "var(--ink)", listStyle: "none" }}>
-          <span>Definitions & methodology</span>
-          <span style={{ color: "var(--muted)" }}>{defsOpen ? "−" : "+"}</span>
-        </summary>
-        <div className="px-5 pb-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-[12.5px] leading-relaxed" style={{ color: "var(--muted)" }}>
-          {[
-            { term: "Required Lift", def: "The minimum percentage increase in active member revenue needed to cover all programme costs. Calculated as Total Cost ÷ Base Revenue × 100. This is the most useful number for a business case — it doesn't require uplift assumptions, only cost data." },
-            { term: "Revenue Multiple", def: "Incremental Revenue ÷ Total Cost. Answers: 'For every €1 we invest, how many euros come back?' A multiple of 2.5 means €2.50 returned per €1 spent." },
-            { term: "Standard ROI", def: "(Incremental Revenue − Total Cost) ÷ Total Cost × 100. The standard investment return formula. Use this when comparing the programme to other investment options." },
-            { term: "Margin ROI", def: "(Incremental Revenue × Gross Margin% − Total Cost) ÷ Total Cost × 100. More conservative than Standard ROI — accounts for the fact that not all incremental revenue is profit." },
-            { term: "Active Members", def: "Members who made at least one transaction in the past 12 months. Industry average is 25–40% of enrolled base." },
-            { term: "Breakeven", def: "Months until cumulative incremental revenue equals total annual programme cost. Values above 36 months are flagged." },
-            { term: "Benchmarks", def: `ROI benchmark range (${ROI_BENCHMARK.low}–${ROI_BENCHMARK.high}%) and industry uplift range (${INDUSTRY_UPLIFT_RANGE.low}–${INDUSTRY_UPLIFT_RANGE.high}%) are based on EMEA loyalty programme data, 2019–2024.` },
-            { term: "Incremental Revenue", def: "Revenue attributable to the programme above what would have occurred without it. In estimation mode, derived from uplift assumptions. In measurement mode, entered directly from test/control data." },
-          ].map(({ term, def }) => (
-            <div key={term}>
-              <div className="text-[12px] font-semibold mb-1" style={{ color: "var(--ink)", fontFamily: "Syne, sans-serif" }}>{term}</div>
-              <p>{def}</p>
-            </div>
+      <div className={`${activeTab === "inputs" ? "hidden lg:block" : "block"}`}>
+        <div className="flex flex-wrap items-center gap-2 px-5 py-3 border-t" style={{ borderColor: "var(--border)", background: "var(--paper)" }}>
+          {[["↺ Reset defaults", reset], ["Copy results", copyResults], ["Share URL", shareUrl], ["Print / PDF", () => window.print()]].map(([label, fn]) => (
+            <button key={label as string} onClick={fn as () => void}
+              className="text-[11px] tracking-[0.08em] uppercase px-3 py-1.5 rounded border transition-colors"
+              style={{ fontFamily: "Syne, sans-serif", borderColor: "var(--border)", color: "var(--ink)", background: "none" }}>{label as string}</button>
           ))}
+          {copied && <span className="text-[11px]" style={{ color: "var(--gl)", fontFamily: "Syne, sans-serif" }}>Copied ✓</span>}
         </div>
-      </details>
 
-      <div className="px-5 py-5 border-t" style={{ borderColor: "var(--border)", background: "var(--paper)" }}>
-        <div className="text-[11px] tracking-[0.1em] uppercase mb-2" style={{ color: "var(--muted)", fontFamily: "Syne, sans-serif" }}>Help me improve</div>
-        {feedbackSent ? (
-          <p className="text-[13px]" style={{ color: "var(--gl)", fontFamily: "Syne, sans-serif" }}>Thank you — feedback received.</p>
-        ) : (
-          <div className="flex gap-2 items-start">
-            <textarea value={feedback} onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Found an error? Missing a metric? Tell me." rows={2}
-              className="flex-1 text-[12px] bg-white border rounded px-3 py-2 focus:outline-none resize-none"
-              style={{ borderColor: "var(--border)", color: "var(--ink)", fontFamily: "Inter, sans-serif" }} />
-            <button onClick={submitFeedback} disabled={!feedback.trim()}
-              className="text-[11px] tracking-[0.08em] uppercase px-3 py-2 rounded border disabled:opacity-40 transition-colors"
-              style={{ fontFamily: "Syne, sans-serif", background: "var(--green)", color: "#fff", borderColor: "var(--green)" }}>Send</button>
+        <details open={defsOpen} onToggle={(e) => setDefsOpen((e.target as HTMLDetailsElement).open)} className="border-t" style={{ borderColor: "var(--border)" }}>
+          <summary className="px-5 py-3 cursor-pointer text-[12px] font-medium select-none flex items-center justify-between"
+            style={{ fontFamily: "Syne, sans-serif", color: "var(--ink)", listStyle: "none" }}>
+            <span>Definitions & methodology</span>
+            <span style={{ color: "var(--muted)" }}>{defsOpen ? "−" : "+"}</span>
+          </summary>
+          <div className="px-5 pb-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-[12.5px] leading-relaxed" style={{ color: "var(--muted)" }}>
+            {[
+              { term: "Required Lift", def: "The minimum percentage increase in active member revenue needed to cover all programme costs. Calculated as Total Cost ÷ Base Revenue × 100. This is the most useful number for a business case — it doesn't require uplift assumptions, only cost data." },
+              { term: "Revenue Multiple", def: "Incremental Revenue ÷ Total Cost. Answers: 'For every €1 we invest, how many euros come back?' A multiple of 2.5 means €2.50 returned per €1 spent." },
+              { term: "Standard ROI", def: "(Incremental Revenue − Total Cost) ÷ Total Cost × 100. The standard investment return formula. Use this when comparing the programme to other investment options." },
+              { term: "Margin ROI", def: "(Incremental Revenue × Gross Margin% − Total Cost) ÷ Total Cost × 100. More conservative than Standard ROI — accounts for the fact that not all incremental revenue is profit." },
+              { term: "Active Members", def: "Members who made at least one transaction in the past 12 months. Industry average is 25–40% of enrolled base." },
+              { term: "Breakeven", def: "Months until cumulative incremental revenue equals total annual programme cost. Values above 36 months are flagged." },
+              { term: "Benchmarks", def: `ROI benchmark range (${ROI_BENCHMARK.low}–${ROI_BENCHMARK.high}%) and industry uplift range (${INDUSTRY_UPLIFT_RANGE.low}–${INDUSTRY_UPLIFT_RANGE.high}%) are based on EMEA loyalty programme data, 2019–2024.` },
+              { term: "Incremental Revenue", def: "Revenue attributable to the programme above what would have occurred without it. In estimation mode, derived from uplift assumptions. In measurement mode, entered directly from test/control data." },
+            ].map(({ term, def }) => (
+              <div key={term}>
+                <div className="text-[12px] font-semibold mb-1" style={{ color: "var(--ink)", fontFamily: "Syne, sans-serif" }}>{term}</div>
+                <p>{def}</p>
+              </div>
+            ))}
           </div>
-        )}
+        </details>
+
+        <div className="px-5 py-5 border-t" style={{ borderColor: "var(--border)", background: "var(--paper)" }}>
+          <div className="text-[11px] tracking-[0.1em] uppercase mb-2" style={{ color: "var(--muted)", fontFamily: "Syne, sans-serif" }}>Help me improve</div>
+          {feedbackSent ? (
+            <p className="text-[13px]" style={{ color: "var(--gl)", fontFamily: "Syne, sans-serif" }}>Thank you — feedback received.</p>
+          ) : (
+            <div className="flex gap-2 items-start">
+              <textarea value={feedback} onChange={(e) => setFeedback(e.target.value)}
+                placeholder="Found an error? Missing a metric? Tell me." rows={2}
+                className="flex-1 text-[12px] bg-white border rounded px-3 py-2 focus:outline-none resize-none"
+                style={{ borderColor: "var(--border)", color: "var(--ink)", fontFamily: "Inter, sans-serif" }} />
+              <button onClick={submitFeedback} disabled={!feedback.trim()}
+                className="text-[11px] tracking-[0.08em] uppercase px-3 py-2 rounded border disabled:opacity-40 transition-colors"
+                style={{ fontFamily: "Syne, sans-serif", background: "var(--green)", color: "#fff", borderColor: "var(--green)" }}>Send</button>
+            </div>
+          )}
+        </div>
       </div>
 
       <style>{`
