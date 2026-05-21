@@ -134,6 +134,7 @@ function OutCard({ title, children }: { title: string; children: React.ReactNode
 
 export function RoiCalculator() {
   const [inputs, setInputs] = useState<RoiInputs>(DEFAULT_INPUTS)
+  const [activeTab, setActiveTab] = useState<"inputs" | "results">("inputs")
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -225,8 +226,26 @@ Source: adamnowak.online/tools/roi-calculator`
         </div>
       </details>
 
+      <div className="lg:hidden flex border-b" style={{ borderColor: "var(--border)" }}>
+        {["inputs", "results"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => { setActiveTab(tab as "inputs" | "results"); if (tab === "results") window.scrollTo({ top: 0, behavior: "smooth" }) }}
+            className="flex-1 py-3 text-[12px] tracking-[0.08em] uppercase transition-colors"
+            style={{
+              fontFamily: "Syne, sans-serif",
+              color: activeTab === tab ? "var(--green)" : "var(--muted)",
+              borderBottom: activeTab === tab ? "2px solid var(--green)" : "2px solid transparent",
+              background: "none",
+            }}
+          >
+            {tab === "inputs" ? "Inputs" : "Results"}
+          </button>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-        <div className="p-5 lg:border-r" style={{ borderColor: "var(--border)" }}>
+        <div className={`${activeTab === "results" ? "hidden lg:block" : "block"} p-5 lg:border-r`} style={{ borderColor: "var(--border)" }}>
           <SectionTitle>Programme Size</SectionTitle>
           <SliderInput label="Total enrolled members" tooltip="Total database size — enrolled but not necessarily active" value={inputs.totalMembers} min={10000} max={5000000} step={10000} prefix="  " onChange={set("totalMembers")} />
           <SliderInput label="Active members" tooltip="% who transacted at least once in the past 12 months" value={inputs.activePct} min={5} max={80} step={1} suffix="%" onChange={set("activePct")} />
@@ -267,7 +286,7 @@ Source: adamnowak.online/tools/roi-calculator`
           </div>
         </div>
 
-        <div className="p-5" style={{ background: "#fafaf8" }}>
+        <div className={`${activeTab === "inputs" ? "hidden lg:block" : "block"} p-5`} style={{ background: "#fafaf8" }}>
           <div className="rounded-lg p-5 mb-3" style={{ background: "var(--green)" }}>
             <div className="text-[10px] tracking-[0.14em] uppercase mb-1" style={{ color: "rgba(255,255,255,0.55)", fontFamily: "Syne, sans-serif" }}>Required lift to break even</div>
             <div className="leading-none mb-1" style={{ fontFamily: "Cormorant Garamond, serif", fontStyle: "italic", fontWeight: 600, fontSize: "3.2rem", color: "#fff" }}>{fmtPct(r.requiredLift.pct)}</div>
