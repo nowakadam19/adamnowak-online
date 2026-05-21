@@ -1,4 +1,5 @@
 import type { MDXComponents } from 'mdx/types'
+import { ToolCard } from '@/components/ToolCard'
 
 const heading = (tag: 'h1' | 'h2' | 'h3' | 'h4') => {
   const sizes = {
@@ -31,6 +32,7 @@ const heading = (tag: 'h1' | 'h2' | 'h3' | 'h4') => {
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     ...components,
+    ToolCard,
     h1: heading('h1'),
     h2: heading('h2'),
     h3: heading('h3'),
