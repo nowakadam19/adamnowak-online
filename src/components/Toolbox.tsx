@@ -1,3 +1,5 @@
+"use client"
+
 interface Tool {
   title: string
   description: string
@@ -7,10 +9,13 @@ interface Tool {
 
 interface ToolboxProps {
   pillar: string
-  tools: Tool[]
+  tools?: Tool[]
+  toolsJson?: string
 }
 
-export function Toolbox({ pillar, tools }: ToolboxProps) {
+export function Toolbox({ pillar, tools = [], toolsJson }: ToolboxProps) {
+  const parsedTools: Tool[] = toolsJson ? JSON.parse(toolsJson) : tools
+
   return (
     <div
       className="my-10 rounded-xl p-6"
@@ -35,7 +40,7 @@ export function Toolbox({ pillar, tools }: ToolboxProps) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {tools.map((tool) => (
+        {parsedTools.map((tool) => (
           tool.comingSoon ? (
             <div
               key={tool.title}
