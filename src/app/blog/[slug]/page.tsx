@@ -243,25 +243,35 @@ function PostShell({
   )
 }
 
-function ArticleJsonLd({ title, excerpt, date, slug }: { title: string; excerpt: string; date: string; slug: string }) {
+function ArticleJsonLd({
+  title,
+  excerpt,
+  date,
+  slug,
+  tags,
+}: {
+  title: string
+  excerpt: string
+  date: string
+  slug: string
+  tags: string[]
+}) {
+  const url = `${SITE_URL}/blog/${slug}`
+  const publishedAt = `${date}T00:00:00Z`
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': 'BlogPosting',
+    '@id': `${url}#article`,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    url,
     headline: title,
     description: excerpt,
-    datePublished: date,
-    author: {
-      '@type': 'Person',
-      name: 'Adam Nowak',
-      url: `${SITE_URL}/about`,
-    },
-    publisher: {
-      '@type': 'Person',
-      name: 'Adam Nowak',
-      url: SITE_URL,
-    },
-    url: `${SITE_URL}/blog/${slug}`,
-    image: `${SITE_URL}/og-default.png`,
+    datePublished: publishedAt,
+    dateModified: publishedAt,
+    author: { '@id': `${SITE_URL}/#person` },
+    publisher: { '@id': `${SITE_URL}/#person` },
+    image: `${SITE_URL}/api/og?title=${encodeURIComponent(title)}`,
+    keywords: tags.join(', '),
   }
   return (
     <script
@@ -290,7 +300,7 @@ export default async function PostPage({ params }: Props) {
   const { default: Post } = await import(`@/content/posts/${slug}.mdx`)
   return (
     <>
-      <ArticleJsonLd title={meta.title} excerpt={meta.excerpt} date={meta.date} slug={slug} />
+      <ArticleJsonLd title={meta.title} excerpt={meta.excerpt} date={meta.date} slug={slug} tags={meta.tags} />
       <PostShell
         title={meta.title}
         titleHtml={meta.titleHtml}
