@@ -72,26 +72,53 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
-    {
-      '@type': 'Person',
-      '@id': 'https://www.adamnowak.online/#person',
-      name: 'Adam Nowak',
-      url: 'https://www.adamnowak.online',
-      jobTitle: 'Customer Marketing Strategist',
-      description:
-        'Senior CRM and loyalty strategy professional with 15+ years of experience across EMEA, NAM and APAC. Creator of the Customer Marketing Blueprint.',
-      knowsAbout: [
-        'Customer Loyalty',
-        'CRM Strategy',
-        'Retention Marketing',
-        'Behavioural Psychology',
-        'Customer Lifetime Value',
-        'Loyalty Programmes',
-        'Net Promoter Score',
-        'Customer Data Platforms',
-      ],
-      sameAs: ['https://www.linkedin.com/in/adam-nowak'],
-    },
+      {
+        '@type': 'Person',
+        '@id': 'https://www.adamnowak.online/#person',
+        name: 'Adam Nowak',
+        url: 'https://www.adamnowak.online',
+        image: 'https://www.adamnowak.online/adam-nowak.jpg',
+        jobTitle: 'Customer Marketing & Loyalty Director, EMEA',
+        description:
+          'Customer loyalty and CRM practitioner. 20+ years in customer marketing, 15+ specifically in loyalty across EMEA, NAM and APAC. Loyalty programs at IKEA, Electrolux, and Avis Budget Group International.',
+        worksFor: {
+          '@type': 'Organization',
+          name: 'Avis Budget Group International',
+          url: 'https://www.avisbudgetgroup.com',
+        },
+        alumniOf: [
+          {
+            '@type': 'Organization',
+            name: 'IKEA',
+            url: 'https://www.ikea.com',
+          },
+          {
+            '@type': 'Organization',
+            name: 'Electrolux',
+            url: 'https://www.electroluxgroup.com',
+          },
+        ],
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Warsaw',
+          addressCountry: 'PL',
+        },
+        knowsAbout: [
+          'Customer Loyalty',
+          'Loyalty Program Strategy',
+          'CRM Strategy',
+          'Customer Engagement',
+          'Lifecycle Marketing',
+          'Behavioural Economics',
+          'Customer Lifetime Value',
+          'Retention Marketing',
+          'Net Promoter Score',
+          'Customer Data Platforms',
+          'Multi-market Loyalty Programs',
+          'EMEA Markets',
+        ],
+        sameAs: ['https://www.linkedin.com/in/adam-nowak'],
+      },
     {
       '@type': 'WebSite',
       '@id': 'https://www.adamnowak.online/#website',
