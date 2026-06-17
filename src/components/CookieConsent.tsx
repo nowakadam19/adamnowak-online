@@ -13,6 +13,7 @@ import {
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false)
+  const [animatedIn, setAnimatedIn] = useState(false)
 
   useEffect(() => {
     const stored = getStoredConsent()
@@ -27,6 +28,14 @@ export default function CookieConsent() {
     window.addEventListener(REOPEN_CONSENT_EVENT, handler)
     return () => window.removeEventListener(REOPEN_CONSENT_EVENT, handler)
   }, [])
+
+  useEffect(() => {
+    if (visible) {
+      const t = setTimeout(() => setAnimatedIn(true), 50)
+      return () => clearTimeout(t)
+    }
+    setAnimatedIn(false)
+  }, [visible])
 
   function handleAccept() {
     applyConsent(ACCEPT_ALL_CONSENT)
@@ -47,49 +56,43 @@ export default function CookieConsent() {
       role="dialog"
       aria-labelledby="cookie-consent-title"
       aria-describedby="cookie-consent-description"
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--ink)]/15 bg-[var(--paper)] shadow-lg"
+      className={`fixed bottom-4 right-4 z-50 w-[300px] max-w-[calc(100vw-2rem)] rounded-xl border border-[var(--ink)]/15 bg-[var(--paper)] p-4 shadow-lg transition-all duration-300 ease-out ${
+        animatedIn ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
+      }`}
     >
-      <div className="mx-auto max-w-4xl px-6 py-5 sm:px-8 sm:py-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex-1">
-            <h2
-              id="cookie-consent-title"
-              className="mb-1 font-semibold text-[var(--ink)]"
-            >
-              Cookies
-            </h2>
-            <p
-              id="cookie-consent-description"
-              className="text-sm text-[var(--ink)]/80"
-            >
-              This site uses cookies to analyze traffic and improve your
-              experience. Essential cookies are always active. Analytics and
-              marketing cookies require your consent.{" "}
-              <Link
-                href="/privacy-policy"
-                className="underline underline-offset-2 hover:no-underline"
-              >
-                Privacy Policy
-              </Link>
-            </p>
-          </div>
-          <div className="flex flex-shrink-0 gap-2">
-            <button
-              type="button"
-              onClick={handleReject}
-              className="rounded border border-[var(--ink)]/30 px-4 py-2 text-sm font-medium text-[var(--ink)] transition hover:border-[var(--ink)] hover:bg-[var(--ink)]/5"
-            >
-              Reject all
-            </button>
-            <button
-              type="button"
-              onClick={handleAccept}
-              className="rounded border border-[var(--ink)]/30 px-4 py-2 text-sm font-medium text-[var(--ink)] transition hover:border-[var(--ink)] hover:bg-[var(--ink)]/5"
-            >
-              Accept all
-            </button>
-          </div>
-        </div>
+      <h2
+        id="cookie-consent-title"
+        className="font-serif italic mb-1 text-[17px] leading-tight text-[var(--ink)]"
+      >
+        Cookies
+      </h2>
+      <p
+        id="cookie-consent-description"
+        className="mb-3 text-xs leading-relaxed text-[var(--ink)]/75"
+      >
+        We use cookies to improve your experience.{" "}
+        <Link
+          href="/privacy-policy"
+          className="underline underline-offset-2 hover:no-underline"
+        >
+          Privacy Policy
+        </Link>
+      </p>
+      <div className="flex gap-1.5">
+        <button
+          type="button"
+          onClick={handleReject}
+          className="font-display flex-1 rounded-md border border-[var(--ink)]/30 px-2.5 py-1.5 text-[10px] uppercase tracking-widest text-[var(--ink)] transition hover:border-[var(--ink)] hover:bg-[var(--ink)]/5"
+        >
+          Reject all
+        </button>
+        <button
+          type="button"
+          onClick={handleAccept}
+          className="font-display flex-1 rounded-md border border-[var(--ink)]/30 px-2.5 py-1.5 text-[10px] uppercase tracking-widest text-[var(--ink)] transition hover:border-[var(--ink)] hover:bg-[var(--ink)]/5"
+        >
+          Accept all
+        </button>
       </div>
     </div>
   )

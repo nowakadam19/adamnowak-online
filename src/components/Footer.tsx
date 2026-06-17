@@ -59,6 +59,16 @@ export default function Footer() {
             <li>
               <PrivacyPolicyLink />
             </li>
+            <li
+              aria-hidden="true"
+              style={{
+                fontFamily: 'var(--font-syne)',
+                fontSize: '10px',
+                color: 'rgba(245,240,232,0.4)',
+              }}
+            >
+              ·
+            </li>
             <li>
               <ManageCookiesLink />
             </li>
