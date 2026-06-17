@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import ManageCookiesLink from "@/components/ManageCookiesLink"
 
 const NAV_LINKS = [
   { href: 'https://linkedin.com/in/adam-nowak', label: 'LinkedIn', external: true },
@@ -54,6 +55,9 @@ export default function Footer() {
                 </Link>
               </li>
             ))}
+            <li>
+              <ManageCookiesLink />
+            </li>
           </ul>
         </nav>
 
