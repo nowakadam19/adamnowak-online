@@ -18,23 +18,22 @@ export default function Footer() {
       style={{ background: 'var(--ink)', borderColor: 'var(--green)' }}
     >
       <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
-        <Link
-          href="/"
-          className="no-underline"
-          style={{
-            fontFamily: 'var(--font-syne)',
-            fontSize: '14px',
-            fontWeight: 800,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: 'rgba(245,240,232,0.6)',
-          }}
-        >
-          Adam<span style={{ color: 'var(--green)' }}>.</span>Nowak
-        </Link>
-
-        <nav>
-          <ul className="flex gap-6 list-none">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          <Link
+            href="/"
+            className="no-underline"
+            style={{
+              fontFamily: 'var(--font-syne)',
+              fontSize: '14px',
+              fontWeight: 800,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: 'rgba(245,240,232,0.6)',
+            }}
+          >
+            Adam<span style={{ color: 'var(--green)' }}>.</span>Nowak
+          </Link>
+          <ul style={{ display: 'flex', listStyle: 'none', margin: 0, padding: 0 }}>
             {NAV_LINKS.map(({ href, label, external }) => (
               <li key={href}>
                 <Link
@@ -56,6 +55,11 @@ export default function Footer() {
                 </Link>
               </li>
             ))}
+          </ul>
+        </div>
+
+        <nav>
+          <ul style={{ display: 'flex', alignItems: 'center', gap: '8px', listStyle: 'none', margin: 0, padding: 0 }}>
             <li>
               <PrivacyPolicyLink />
             </li>
