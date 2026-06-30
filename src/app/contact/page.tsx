@@ -126,6 +126,12 @@ export default function ContactPage() {
     setFormBusy(true);
     try {
       await sendEmail({ name: formName, email: formEmail, message: formMsg, source: "form" });
+      if (typeof window !== "undefined" && (window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          event: "contact_form_submit",
+          form_location: "contact_page"
+        });
+      }
       setCollected({ name: formName, email: formEmail, message: formMsg });
       setPhase("success");
     } catch {}

@@ -191,6 +191,12 @@ Source: adamnowak.online/tools/loyalty-roi-calculator`
     if (!feedback.trim()) return
     try {
       await fetch("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: feedback }) })
+      if (typeof window !== "undefined" && (window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          event: "feedback_form_submit",
+          form_location: "roi_calculator"
+        });
+      }
     } catch (_) {}
     setFeedbackSent(true)
     setFeedback("")
