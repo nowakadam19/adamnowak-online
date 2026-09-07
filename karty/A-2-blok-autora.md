@@ -30,7 +30,7 @@ Blok autora zawierający:
 
 > **Adam Nowak**
 >
-> Fifteen years in loyalty, three countries, two global roles — and a long list of decisions I'd make differently now. I write them down so they cost you less than they cost me.
+> Fifteen years in loyalty, three countries, two global roles — and a long list of decisions I'd make differently now. I write them down here, while I still remember why they seemed sensible at the time.
 
 3. **Odsyłacz** do `/about` z treścią `More about me →`.
 
