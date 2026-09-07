@@ -30,7 +30,7 @@ Blok autora zawierający:
 
 > **Adam Nowak**
 >
-> Fifteen years building loyalty programmes — Poland, Sweden and the UK, the last two in global roles. I write about what fails in these programmes and build tools that show it in numbers.
+> Fifteen years in loyalty, three countries, two global roles — and a long list of decisions I'd make differently now. I write them down so they cost you less than they cost me.
 
 3. **Odsyłacz** do `/about` z treścią `More about me →`.
 
