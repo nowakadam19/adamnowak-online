@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 
 const stats = [
-  { value: '15+', label: 'Years' },
+  { value: '20+', label: 'Years' },
   { value: '30+', label: 'Markets' },
   { value: '3', label: 'Continents' },
 ]
@@ -107,7 +107,7 @@ export default function AboutClient() {
               color: 'var(--ink)',
             }}
           >
-            Fifteen years building loyalty programs across EMEA.{' '}
+            Twenty years building loyalty programs across EMEA.{' '}
             <span style={{ color: 'var(--green)' }}>The complexity is the advantage.</span>
           </h1>
 
@@ -148,7 +148,7 @@ export default function AboutClient() {
       {/* Body */}
       <div style={{ fontSize: '17px', lineHeight: 1.75, color: 'var(--ink)' }}>
         <p className="mb-6">
-          I&apos;ve spent fifteen years on a simple conviction: brands earn loyalty by being loyal first.
+          I&apos;ve spent twenty years on a simple conviction: brands earn loyalty by being loyal first.
         </p>
         <p className="mb-6">
           That means being genuinely curious about what customers want, rewarding the behaviours
@@ -236,7 +236,7 @@ export default function AboutClient() {
           <p>
             Teams brought in to design or audit a loyalty program who want an external expert with
             real program P&amp;L experience — not just strategic frameworks. I&apos;ve been the
-            client for fifteen years. That perspective changes what I build with you.
+            client for twenty years. That perspective changes what I build with you.
           </p>
         </div>
 
