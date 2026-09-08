@@ -107,7 +107,7 @@ export default function AboutClient() {
               color: 'var(--ink)',
             }}
           >
-            Twenty years building loyalty programs across EMEA.{' '}
+            Twenty years in customer loyalty. Poland, Sweden, the UK — the last two in global roles.{' '}
             <span style={{ color: 'var(--green)' }}>The complexity is the advantage.</span>
           </h1>
 
@@ -159,7 +159,13 @@ export default function AboutClient() {
           I&apos;ve worked at every level this requires. At IKEA I built IKEA FAMILY from store
           level through country strategy to global frameworks — the full stack, from a single market
           mechanic to a model that travelled. At Electrolux I led loyalty and CRM across 30+ markets
-          in Europe and Asia. At Avis Budget Group International I now lead EMEA loyalty strategy.
+          in Europe and Asia. At Avis Budget Group International I lead EMEA loyalty strategy.
+        </p>
+        <p className="mb-6">
+          Alongside that, I build things. Sites, tracking, campaigns, small tools. Partly because I
+          like it when something works, and I like fixing it when it doesn&apos;t — and partly
+          because the distance between &ldquo;we should have this&rdquo; and &ldquo;here it is&rdquo;
+          turns out to be mostly time and money.
         </p>
         <p className="mb-16">
           The multicultural complexity isn&apos;t a constraint. It&apos;s where the real thinking happens.
@@ -239,6 +245,11 @@ export default function AboutClient() {
             client for twenty years. That perspective changes what I build with you.
           </p>
         </div>
+
+        <p className="mb-16">
+          Not every problem has an answer on the spot. Every one breaks down into time, money and
+          decisions — and telling those three apart is most of the work.
+        </p>
 
         <h2
           className="mb-10"
