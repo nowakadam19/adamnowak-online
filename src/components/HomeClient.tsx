@@ -1,7 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import type { PostMeta } from '@/lib/posts'
+import { HERO_VARIANTS } from '@/lib/heroVariants'
 
 const PILLARS: { num: string; label: string }[] = [
   { num: '01', label: "Know who you're talking to" },
@@ -17,111 +19,148 @@ function formatDate(dateStr: string) {
   return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short' })
 }
 
-export default function HomeClient({ posts }: { posts: PostMeta[] }) {
+export default function HomeClient({
+  posts,
+  variantIndex = 0,
+}: {
+  posts: PostMeta[]
+  variantIndex?: number
+}) {
+  const variant = HERO_VARIANTS[variantIndex] ?? HERO_VARIANTS[0]
+
   return (
     <>
       {/* ── HERO ─────────────────────────────────────────────── */}
       <section
-        className="flex flex-col justify-center min-h-screen mx-auto max-w-[760px] px-6 md:px-12"
-        style={{ paddingTop: '60px' }}
+        className="mx-auto max-w-[760px] px-6 md:px-12"
+        style={{ paddingTop: '92px', paddingBottom: '56px' }}
+        aria-label="Introduction"
       >
-        <div className="animate-fade-up-1 mb-8">
-          <div
-            style={{
-              fontFamily: 'var(--font-cormorant)',
-              fontStyle: 'italic',
-              fontWeight: 400,
-              fontSize: 'clamp(28px, 3.5vw, 40px)',
-              lineHeight: 1.1,
-              marginBottom: '4px',
-            }}
-          >
-            <span style={{ color: 'var(--ink)' }}>Adam </span>
-            <span style={{ color: 'var(--green)' }}>Nowak</span>
-          </div>
-          <div
-            style={{
-              fontFamily: 'var(--font-syne)',
-              fontSize: '9px',
-              fontWeight: 700,
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              color: 'var(--ink)',
-              opacity: 0.4,
-            }}
-          >
-            Customer Loyalty Intelligence
+        {/* a) Author signature — fixed across all variants */}
+        <div className="animate-fade-up-1 flex items-center gap-4" style={{ marginBottom: '30px' }}>
+          <Image
+            src="/adam-nowak.jpg"
+            alt="Adam Nowak"
+            width={56}
+            height={56}
+            priority
+            className="rounded-full object-cover shrink-0"
+            style={{ width: '56px', height: '56px' }}
+          />
+          <div>
+            <div
+              style={{
+                fontFamily: 'var(--font-cormorant)',
+                fontStyle: 'italic',
+                fontWeight: 400,
+                fontSize: '21px',
+                lineHeight: 1.1,
+                color: 'var(--ink)',
+              }}
+            >
+              Adam Nowak
+            </div>
+            <div
+              style={{
+                fontSize: '12.5px',
+                lineHeight: 1.45,
+                color: 'var(--muted)',
+                marginTop: '3px',
+              }}
+            >
+              Twenty years in loyalty.
+              <br />
+              Poland, Sweden, the UK — the last two in global roles.
+            </div>
           </div>
         </div>
 
+        {/* b) Rotating H1 + lead — reserved heights keep the hero from shifting between days */}
         <h1
-          className="animate-fade-up-2 mb-8"
+          className="animate-fade-up-2"
           style={{
             fontFamily: 'var(--font-cormorant)',
-            fontSize: 'clamp(40px, 6vw, 76px)',
+            fontSize: 'clamp(34px, 8.7vw, 60px)',
             fontWeight: 400,
-            lineHeight: 1.06,
+            lineHeight: 1.09,
             letterSpacing: '-0.02em',
             color: 'var(--ink)',
+            marginBottom: '22px',
+            // Reserved so the three variants (3–4 wrapped lines at 390px) occupy the
+            // same height and the hero never shifts between days. Sized above the
+            // tallest variant's natural height with headroom for line-wrap variance.
+            minHeight: '168px',
           }}
         >
-          <em style={{ fontStyle: 'italic', fontWeight: 400 }}>
-            Customer loyalty
-            <br />
-            {' '}is full of noise.
+          {variant.before}
+          <em style={{ fontStyle: 'italic', fontWeight: 400, color: 'var(--green)' }}>
+            {variant.accent}
           </em>
-          <br />
-          <span style={{ color: 'var(--green)' }}>This is the signal.</span>
+          {variant.after}
         </h1>
 
         <p
-          className="animate-fade-up-3 mb-12"
+          className="animate-fade-up-3"
           style={{
-            fontSize: '17px',
+            fontSize: '16px',
             color: 'var(--muted)',
             maxWidth: '520px',
-            lineHeight: 1.7,
+            lineHeight: 1.6,
+            marginBottom: '32px',
+            minHeight: '80px',
           }}
         >
-          Practical thinking on loyalty, CRM, and customer marketing — for practitioners who want clarity, not complexity.
+          {variant.lead}
         </p>
 
-        <div className="animate-fade-up-4 inline-flex items-center gap-4">
+        {/* c) Primary action */}
+        <div className="animate-fade-up-4">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 no-underline transition-colors duration-200"
+            className="no-underline transition-opacity duration-200"
             style={{
-              fontFamily: 'var(--font-syne)',
-              fontSize: '11px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              minHeight: '52px',
+              padding: '0 24px',
+              background: 'var(--green)',
+              color: 'var(--paper)',
+              fontFamily: 'var(--font-display)',
+              fontSize: '12px',
               fontWeight: 700,
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
-              color: 'var(--ink)',
-              border: '1.5px solid var(--ink)',
-              background: 'transparent',
-              padding: '10px 20px',
             }}
           >
-            Blog →
+            Read the writing →
           </Link>
-          <Link
-            href="/loyalty-system"
-            className="inline-flex items-center gap-2 no-underline transition-colors duration-200"
-            style={{
-              fontFamily: 'var(--font-syne)',
-              fontSize: '11px',
-              fontWeight: 700,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              color: 'var(--ink)',
-              border: '1.5px solid var(--ink)',
-              background: 'transparent',
-              padding: '10px 20px',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Loyalty System →
-          </Link>
+
+          {/* d) Second-level referral */}
+          <div>
+            <Link
+              href="/loyalty-system"
+              className="no-underline transition-colors duration-200"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                minHeight: '44px',
+                marginTop: '8px',
+                fontSize: '13.5px',
+                color: 'var(--muted)',
+              }}
+            >
+              Or see the six-part{' '}
+              <span
+                style={{
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '2px',
+                  marginLeft: '0.35ch',
+                }}
+              >
+                Loyalty System
+              </span>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -406,7 +445,7 @@ export default function HomeClient({ posts }: { posts: PostMeta[] }) {
               letterSpacing: '-0.01em',
             }}
             dangerouslySetInnerHTML={{
-              __html: "I've spent 15+ years at the intersection of CRM, loyalty, and human behaviour — across EMEA, NAM, and APAC. I write to make this field <em style=\"font-style:italic;color:var(--green)\">simpler and more honest</em> than most people leave it.",
+              __html: "I've spent 20+ years at the intersection of CRM, loyalty, and human behaviour — across EMEA, NAM, and APAC. I write to make this field <em style=\"font-style:italic;color:var(--green)\">simpler and more honest</em> than most people leave it.",
             }}
           />
         </div>

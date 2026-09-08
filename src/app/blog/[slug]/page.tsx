@@ -186,9 +186,8 @@ function PostShell({
             Adam Nowak
           </div>
           <p style={{ color: 'var(--muted)', lineHeight: 1.75, marginBottom: '1.25em' }}>
-            Fifteen years in loyalty, three countries, two global roles — and a long list of
-            decisions I&apos;d make differently now. I write them down here, while I still remember
-            why they seemed sensible at the time.
+            Twenty years in loyalty — Poland, Sweden and the UK, the last two in global roles. I
+            write about what breaks in customer loyalty, and build the tools that show it in numbers.
           </p>
           <Link
             href="/about"

@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     template: '%s | Adam Nowak',
   },
   description:
-    'Practical thinking on customer loyalty, CRM and retention marketing — clear frameworks, honest takes, and actionable ideas from 15+ years across EMEA, NAM and APAC.',
+    'Practical thinking on customer loyalty, CRM and retention marketing — clear frameworks, honest takes, and actionable ideas from 20+ years across EMEA, NAM and APAC.',
   metadataBase: new URL('https://www.adamnowak.online'),
   alternates: { canonical: 'https://www.adamnowak.online' },
   robots: { index: true, follow: true },
@@ -82,7 +82,7 @@ const jsonLd = {
         image: 'https://www.adamnowak.online/adam-nowak.jpg',
         jobTitle: 'Customer Marketing & Loyalty Director, EMEA',
         description:
-          'Customer loyalty and CRM practitioner. 20+ years in customer marketing, 15+ specifically in loyalty across EMEA, NAM and APAC. Loyalty programs at IKEA, Electrolux, and Avis Budget Group International.',
+          'Customer loyalty and CRM practitioner. 20+ years in customer marketing and loyalty across EMEA, NAM and APAC. Loyalty programs at IKEA, Electrolux, and Avis Budget Group International.',
         worksFor: {
           '@type': 'Organization',
           name: 'Avis Budget Group International',
