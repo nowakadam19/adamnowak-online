@@ -7,6 +7,9 @@
 // Each H1 is split so the `accent` fragment renders in serif italic --green while
 // the rest stays --ink. Adding a fourth variant is a one-line change to this array;
 // the date rotation adapts to the new length automatically.
+//
+// The lead is deliberately identical across variants: it names the offer
+// (strategy — not a loyalty platform) and stays stable while the headline rotates.
 export interface HeroVariant {
   before: string
   accent: string
@@ -14,23 +17,26 @@ export interface HeroVariant {
   lead: string
 }
 
+const LEAD =
+  'Strategy for loyalty, CRM and customer marketing — for practitioners who want clarity, not complexity.'
+
 export const HERO_VARIANTS: HeroVariant[] = [
   {
     before: 'Twenty years taught me where ',
     accent: 'customer loyalty breaks',
     after: ". New tools mean it doesn't have to.",
-    lead: 'Writing on loyalty, CRM and customer marketing — plus the tools I build along the way.',
+    lead: LEAD,
   },
   {
     before: 'Most of what customer teams want ',
     accent: "isn't impossible",
     after: ". It's just unbuilt.",
-    lead: 'Writing and working tools on loyalty, CRM and customer marketing — for people who want it built, not debated.',
+    lead: LEAD,
   },
   {
     before: 'Every loyalty problem breaks down into ',
     accent: 'time, money and decisions',
     after: '. I write about telling them apart.',
-    lead: 'Loyalty, CRM and customer marketing — for practitioners who want clarity, not complexity.',
+    lead: LEAD,
   },
 ]
