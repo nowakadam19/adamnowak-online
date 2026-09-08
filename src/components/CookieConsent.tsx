@@ -73,7 +73,7 @@ export default function CookieConsent() {
         We use cookies to improve your experience.{" "}
         <Link
           href="/privacy-policy"
-          className="underline underline-offset-2 hover:no-underline"
+          className="inline-flex items-center min-h-[44px] align-middle underline underline-offset-2 hover:no-underline"
         >
           Privacy Policy
         </Link>
@@ -82,14 +82,14 @@ export default function CookieConsent() {
         <button
           type="button"
           onClick={handleReject}
-          className="font-display flex-1 rounded-md border border-[var(--ink)]/30 px-2.5 py-1.5 text-[10px] uppercase tracking-widest text-[var(--ink)] transition hover:border-[var(--ink)] hover:bg-[var(--ink)]/5"
+          className="font-display flex flex-1 items-center justify-center min-h-[44px] rounded-md border border-[var(--ink)]/30 px-2.5 py-1.5 text-[10px] uppercase tracking-widest text-[var(--ink)] transition hover:border-[var(--ink)] hover:bg-[var(--ink)]/5"
         >
           Reject all
         </button>
         <button
           type="button"
           onClick={handleAccept}
-          className="font-display flex-1 rounded-md border border-[var(--ink)]/30 px-2.5 py-1.5 text-[10px] uppercase tracking-widest text-[var(--ink)] transition hover:border-[var(--ink)] hover:bg-[var(--ink)]/5"
+          className="font-display flex flex-1 items-center justify-center min-h-[44px] rounded-md border border-[var(--ink)]/30 px-2.5 py-1.5 text-[10px] uppercase tracking-widest text-[var(--ink)] transition hover:border-[var(--ink)] hover:bg-[var(--ink)]/5"
         >
           Accept all
         </button>

@@ -44,7 +44,7 @@ export default function Header() {
 
         {/* Hamburger button */}
         <button
-          className="md:hidden flex flex-col justify-center gap-[5px] w-8 h-8 p-1"
+          className="md:hidden flex flex-col justify-center items-center gap-[5px] w-11 h-11"
           onClick={() => setOpen(o => !o)}
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
@@ -53,6 +53,7 @@ export default function Header() {
           <span
             style={{
               display: 'block',
+              width: '24px',
               height: '1.5px',
               background: 'var(--ink)',
               transformOrigin: 'center',
@@ -63,6 +64,7 @@ export default function Header() {
           <span
             style={{
               display: 'block',
+              width: '24px',
               height: '1.5px',
               background: 'var(--ink)',
               transition: 'opacity 0.2s',
@@ -72,6 +74,7 @@ export default function Header() {
           <span
             style={{
               display: 'block',
+              width: '24px',
               height: '1.5px',
               background: 'var(--ink)',
               transformOrigin: 'center',

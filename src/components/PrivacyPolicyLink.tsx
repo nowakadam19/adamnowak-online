@@ -6,6 +6,9 @@ export default function PrivacyPolicyLink() {
       href="/privacy-policy"
       className="transition-colors duration-200"
       style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        minHeight: '44px',
         fontFamily: 'var(--font-syne)',
         fontSize: '10px',
         fontWeight: 600,
