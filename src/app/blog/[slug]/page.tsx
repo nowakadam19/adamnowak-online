@@ -3,6 +3,7 @@ import path from 'path'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { getAllPosts, type PostMeta } from '@/lib/posts'
 import ReadingProgressBar from '@/components/blog/ReadingProgressBar'
 import ShareButton from '@/components/blog/ShareButton'
@@ -158,6 +159,52 @@ function PostShell({
 
         {children}
       </article>
+
+      <div
+        className="flex flex-col md:flex-row md:items-start"
+        style={{ marginTop: '72px', paddingTop: '48px', borderTop: '1px solid var(--border)', gap: '24px' }}
+      >
+        <Image
+          src="/adam-nowak.jpg"
+          alt="Adam Nowak"
+          width={64}
+          height={64}
+          className="rounded-full object-cover shrink-0 h-14 w-14 md:h-16 md:w-16"
+        />
+        <div>
+          <div
+            style={{
+              fontFamily: 'var(--font-syne)',
+              fontSize: '10px',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: 'var(--muted)',
+              marginBottom: '12px',
+            }}
+          >
+            Adam Nowak
+          </div>
+          <p style={{ color: 'var(--muted)', lineHeight: 1.75, marginBottom: '1.25em' }}>
+            Fifteen years in loyalty, three countries, two global roles — and a long list of
+            decisions I&apos;d make differently now. I write them down here, while I still remember
+            why they seemed sensible at the time.
+          </p>
+          <Link
+            href="/about"
+            className="inline-flex items-center no-underline transition-colors duration-200 text-muted hover:text-amber"
+            style={{
+              fontFamily: 'var(--font-syne)',
+              fontSize: '11px',
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+            }}
+          >
+            More about me →
+          </Link>
+        </div>
+      </div>
 
       {related.length > 0 && (
         <div style={{ marginTop: '72px', paddingTop: '48px', borderTop: '1px solid var(--border)' }}>
