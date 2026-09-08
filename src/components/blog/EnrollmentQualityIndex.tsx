@@ -22,7 +22,7 @@ export default function EnrollmentQualityIndex() {
   return (
     <div className="my-8 font-sans">
       {/* Controls */}
-      <div className="flex flex-nowrap gap-4 mb-6 text-sm text-[var(--ink)] opacity-70">
+      <div className="flex flex-wrap gap-4 mb-6 text-sm text-[var(--ink)] opacity-70 md:flex-nowrap">
         <label className="flex items-center gap-2">
           Enrolled
           <input type="range" min={100000} max={5000000} step={100000}
