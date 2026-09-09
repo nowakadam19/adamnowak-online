@@ -7,7 +7,7 @@ const SITE_URL = 'https://www.adamnowak.online'
 export const metadata: Metadata = {
   title: 'The Loyalty System | Adam Nowak',
   description:
-    'The biggest mistake in loyalty is a missing system. Six pillars for practitioners who want to build customer loyalty that actually lasts.',
+    'The biggest mistake in loyalty is a missing system. Six interdependent pillars for practitioners who want customer loyalty that actually lasts — not a checklist.',
   alternates: {
     canonical: `${SITE_URL}/loyalty-system`,
   },
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     type: 'website',
     title: 'The Loyalty System | Adam Nowak',
     description:
-      'Six pillars for practitioners who want to build customer loyalty that actually lasts.',
+      'Six interdependent pillars for practitioners who want customer loyalty that actually lasts — not a checklist.',
     url: `${SITE_URL}/loyalty-system`,
     images: [{ url: `${SITE_URL}/og-default.png`, width: 1200, height: 630, alt: 'The Loyalty System — Adam Nowak' }],
   },
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'The Loyalty System | Adam Nowak',
     description:
-      'Six pillars for practitioners who want to build customer loyalty that actually lasts.',
+      'Six interdependent pillars for practitioners who want customer loyalty that actually lasts — not a checklist.',
     images: [`${SITE_URL}/og-default.png`],
   },
 }
@@ -33,7 +33,7 @@ const SCHEMA = {
   '@type': 'CollectionPage',
   name: 'The Loyalty System',
   description:
-    'A structured guide to building customer loyalty — six pillars for practitioners.',
+    'Six interdependent pillars for building customer loyalty that lasts — for practitioners, not a checklist.',
   url: 'https://adamnowak.online/loyalty-system',
   author: {
     '@type': 'Person',
@@ -65,14 +65,14 @@ export default function LoyaltySystemPage() {
             </em>
           </h1>
           <p className="text-lg text-[var(--paper)]/70 max-w-xl leading-relaxed mb-4">
-            Most loyalty programmes fail at integration, not execution. Three
-            teams, three roadmaps, three definitions of a loyal customer — and
-            nobody looking at the whole.
+            Most advice on loyalty comes in isolated pieces — a tip on
+            segmentation here, a rule for rewards there. Put them all in the
+            same room and half of them contradict each other.
           </p>
           <p className="text-lg text-[var(--paper)]/70 max-w-xl leading-relaxed">
-            The Loyalty System is a practical framework for building loyalty
-            that lasts. Six pillars, each dependent on the others. An ecosystem,
-            not a checklist.
+            These six pillars aren&apos;t a checklist. Each one leans on the
+            others — get the customer view wrong, and everything built on top
+            of it inherits the mistake.
           </p>
         </div>
       </section>
