@@ -14,8 +14,17 @@ export interface PostMeta {
   readTime: number
 }
 
+// The frontmatter date doubles as a publication schedule: a post dated ahead of
+// today stays out of every listing until that day arrives. Compared by calendar
+// day in UTC, like the hero rotation on the home page, so the cutoff does not
+// move with the build machine's clock.
+function todayUtc(): string {
+  return new Date().toISOString().slice(0, 10)
+}
+
 export function getAllPosts(): PostMeta[] {
   const files = fs.readdirSync(postsDir).filter(f => f.endsWith('.md') || f.endsWith('.mdx'))
+  const today = todayUtc()
 
   return files
     .map(file => {
@@ -35,6 +44,6 @@ export function getAllPosts(): PostMeta[] {
         readTime,
       }
     })
+    .filter(post => String(post.date).slice(0, 10) <= today)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
-
