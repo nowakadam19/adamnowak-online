@@ -1,0 +1,32 @@
+✅ 360px: no /api/chat request before Start
+✅ 360px before Start: no horizontal scroll (360 ≤ 360)
+✅ 360px: Start button 286×44, height ≥ 44
+✅ 360px: Start sends one opening request with no visitor message
+✅ 360px: focused text field clear of the header and the sticky bar (field 638–700 px, bar from 720 px)
+✅ 360px: text field font-size 16px ≥ 16
+✅ 360px: Send button 44×44 ≥ 44
+✅ 360px: text field 242×62, height ≥ 44
+✅ 360px: history carries the opening comment and the question
+✅ 360px: after the slider move the next message carries Tier 2 from €2,000 (was €830)
+✅ 360px conversation: no horizontal scroll (360 ≤ 360)
+✅ 360px: limit message in the panel, text field disabled
+✅ 360px limit: no horizontal scroll (360 ≤ 360)
+✅ 360px: every context under 5 kB
+✅ 360px: no page errors 
+✅ 360px CSV: payload has source csv, no file name (2182 chars)
+✅ 1280px: no /api/chat request before Start
+✅ 1280px before Start: no horizontal scroll (1280 ≤ 1280)
+✅ 1280px: Start button 78×44, height ≥ 44
+✅ 1280px: Start sends one opening request with no visitor message
+✅ 1280px: focused text field clear of the header and the sticky bar (field 604–666 px, bar from — px)
+✅ 1280px: text field font-size 16px ≥ 16
+✅ 1280px: Send button 44×44 ≥ 44
+✅ 1280px: text field 458×62, height ≥ 44
+✅ 1280px: history carries the opening comment and the question
+✅ 1280px: after the slider move the next message carries Tier 2 from €2,000 (was €830)
+✅ 1280px conversation: no horizontal scroll (1280 ≤ 1280)
+✅ 1280px: limit message in the panel, text field disabled
+✅ 1280px limit: no horizontal scroll (1280 ≤ 1280)
+✅ 1280px: every context under 5 kB
+✅ 1280px: no page errors 
+✅ 1280px CSV: payload has source csv, no file name (2182 chars)
