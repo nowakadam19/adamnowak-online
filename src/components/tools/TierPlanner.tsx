@@ -43,6 +43,8 @@ import {
   type CsvFailure,
   type CsvSuccess,
 } from "@/lib/tier-csv"
+import { buildTierBotContext, distributionSummary, type TierBotSource } from "@/lib/tier-bot-context"
+import { TierPlannerChat } from "./TierPlannerChat"
 
 // ─────────────────────────────────────────────────────────────
 // State and URL
@@ -67,6 +69,8 @@ interface PlannerState {
 }
 
 const DEFAULT_TIER_COUNT = 2
+
+const BOT_SOURCES: Record<Source, TierBotSource> = { approx: "approximation", sample: "sample", csv: "csv" }
 
 /** Path C: customers from the uploaded file, kept in memory only (never in the URL). */
 type CsvData = CsvSuccess & { fileName: string }
@@ -776,6 +780,9 @@ export function TierPlanner() {
     return thresholdChange(population, current, thresholds, softLanding, weight)
   }, [customers, flags, current, thresholds, excludeExtremes, softLanding, weight])
 
+  // Spend-distribution summary for the bot; changes only with the data, not with the sliders
+  const distribution = useMemo(() => distributionSummary(customers), [customers])
+
   // Slider range ignores extreme customers so it stays usable
   const sliderRange = useMemo(() => {
     const all = sortAscending(customers.map((c) => c.spend))
@@ -902,6 +909,14 @@ export function TierPlanner() {
   const top = tiersNamed[tiersNamed.length - 1]
   const extremesFound = r.extremes.count > 0
   const thresholdsChanged = state.current !== null && state.current.join(",") !== state.thresholds.join(",")
+  const botContext = buildTierBotContext({
+    source: BOT_SOURCES[calc.source],
+    params: calc,
+    result: { ...r, tiers: tiersNamed },
+    distribution,
+    change,
+    currentThresholds: calc.current,
+  })
   const buttonClass = "min-h-[44px] text-[11px] tracking-[0.08em] uppercase px-3 py-2 rounded border transition-colors"
 
   const dataSection = (
@@ -1203,6 +1218,8 @@ export function TierPlanner() {
                 <p className="text-[13px]" style={{ color: "var(--muted)" }}>No customers meet the extreme-customer rule in this data, so percentile thresholds are the same with and without them.</p>
               )}
             </OutCard>
+
+            <TierPlannerChat context={botContext} />
           </>) : (
             <OutCard title="Results">
               <p className="text-[13px] leading-relaxed" style={{ color: "var(--muted)" }}>
