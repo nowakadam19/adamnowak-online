@@ -29,6 +29,18 @@ async function askBot(messages: Turn[], context: TierBotContext): Promise<Reply>
   }
 }
 
+/** Room kept below the text field for the planner's sticky summary bar on phones. */
+const STICKY_BAR_ROOM = 80
+
+// Scrolls the page so a focused field sits above the sticky bar and the on-screen keyboard.
+// Done by hand: body has overflow-x: hidden, which stops scrollIntoView from moving the window.
+function keepAboveStickyBar(el: HTMLElement) {
+  const vv = window.visualViewport
+  const visibleBottom = vv ? vv.offsetTop + vv.height : window.innerHeight
+  const overlap = el.getBoundingClientRect().bottom + STICKY_BAR_ROOM - visibleBottom
+  if (overlap > 0) window.scrollBy({ top: overlap, behavior: "smooth" })
+}
+
 function TypingDots() {
   return (
     <span className="flex gap-1 items-center px-4 py-3" aria-label="Assistant is typing">
@@ -152,6 +164,7 @@ export function TierPlannerChat({ context }: { context: TierBotContext }) {
           <div className="flex items-end gap-2 px-3 py-3 border-t" style={{ borderColor: "var(--border)" }}>
             <textarea value={input} onChange={(e) => setInput(e.target.value)} rows={2} maxLength={1_500}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send() } }}
+              onFocus={(e) => { const el = e.currentTarget; setTimeout(() => keepAboveStickyBar(el), 300) }}
               disabled={!!limit} aria-label="Your question about the tiers"
               placeholder={limit ? "Limit reached for today" : "Ask about thresholds, benefits, reachability…"}
               className="flex-1 min-w-0 min-h-[44px] bg-white border rounded-[10px] px-3 py-2 text-[16px] leading-snug resize-none focus:outline-none disabled:opacity-50"

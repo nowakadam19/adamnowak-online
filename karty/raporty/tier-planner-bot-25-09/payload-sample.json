@@ -1,0 +1,120 @@
+{
+  "mode": "tier-planner",
+  "messages": [],
+  "context": {
+    "data": {
+      "source": "sample",
+      "customers": 5000,
+      "note": "Built-in fictional sample data, including 18 corporate buyers who spend far more than anyone else."
+    },
+    "programme": {
+      "grossMarginPct": 40,
+      "tiersAboveBase": 2,
+      "qualificationWindowMonths": 12,
+      "statusValidityYears": 1,
+      "softLanding": true,
+      "activityKeepsStatus": false,
+      "excludeExtremeCustomers": false
+    },
+    "complexity": {
+      "rulesToExplain": 1,
+      "mechanisms": [
+        "Soft landing: drop at most one tier"
+      ]
+    },
+    "distribution": {
+      "medianAnnualSpendEur": 160,
+      "medianPurchasesPerYear": 3,
+      "top20RevenueSharePct": 71.2,
+      "top10MeanSpendToMedian": 15,
+      "top20MeanSpendToMedian": 9
+    },
+    "tiers": [
+      {
+        "name": "Base",
+        "fromEur": 0,
+        "customersPct": 75.3,
+        "customers": 3767,
+        "revenuePct": 24.7,
+        "tierMarginEur": 198996,
+        "benefit": null,
+        "benefitCostEur": 0,
+        "benefitCostPctOfTierMargin": 0,
+        "discountOnExistingPurchasesEur": null,
+        "medianSpendEur": 111,
+        "medianPurchasesPerYear": 2,
+        "reach": {
+          "to": "Tier 1",
+          "extraPurchasesPerYear": 5,
+          "purchasesPerYearToday": 2,
+          "typicalBasketEur": 50,
+          "monthsAtTodaysPace": 36,
+          "withinQualificationWindow": false,
+          "nearNextThresholdPct": 7.3
+        }
+      },
+      {
+        "name": "Tier 1",
+        "fromEur": 330,
+        "customersPct": 19.6,
+        "customers": 982,
+        "revenuePct": 24.3,
+        "tierMarginEur": 196146,
+        "benefit": "2% discount",
+        "benefitCostEur": 9807,
+        "benefitCostPctOfTierMargin": 5,
+        "discountOnExistingPurchasesEur": 9807,
+        "medianSpendEur": 466,
+        "medianPurchasesPerYear": 7,
+        "reach": {
+          "to": "Tier 2",
+          "extraPurchasesPerYear": 6,
+          "purchasesPerYearToday": 7,
+          "typicalBasketEur": 71,
+          "monthsAtTodaysPace": 21,
+          "withinQualificationWindow": false,
+          "nearNextThresholdPct": 5.8
+        }
+      },
+      {
+        "name": "Tier 2",
+        "fromEur": 830,
+        "customersPct": 5,
+        "customers": 251,
+        "revenuePct": 51,
+        "tierMarginEur": 410615,
+        "benefit": "operational, €20 per member a year",
+        "benefitCostEur": 5020,
+        "benefitCostPctOfTierMargin": 1.2,
+        "discountOnExistingPurchasesEur": null,
+        "medianSpendEur": 1116,
+        "medianPurchasesPerYear": 13,
+        "reach": null
+      }
+    ],
+    "extremes": {
+      "customers": 18,
+      "customersPct": 0.4,
+      "revenuePct": 36.3,
+      "limitEur": 24825,
+      "excludedFromResults": false,
+      "meanSpendWithEur": 403,
+      "meanSpendWithoutEur": 257,
+      "thresholds": [
+        {
+          "tier": "Tier 1",
+          "thresholdEur": 330,
+          "percentileOfAll": 75,
+          "samePercentileWithoutExtremesEur": 326
+        },
+        {
+          "tier": "Tier 2",
+          "thresholdEur": 830,
+          "percentileOfAll": 95,
+          "samePercentileWithoutExtremesEur": 812
+        }
+      ]
+    },
+    "change": null
+  }
+}
