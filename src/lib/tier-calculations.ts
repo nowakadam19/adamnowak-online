@@ -140,7 +140,8 @@ export function approxBasket(inputs: ApproxInputs): number {
 // Path B — built-in sample data (fictional, deterministic)
 // ─────────────────────────────────────────────────────────────
 
-function mulberry32(seed: number) {
+/** Small seeded PRNG: same seed, same sequence. */
+export function mulberry32(seed: number) {
   let a = seed >>> 0
   return () => {
     a = (a + 0x6d2b79f5) >>> 0
@@ -191,8 +192,16 @@ export function sampleCustomers(): Customer[] {
 // Statistics helpers
 // ─────────────────────────────────────────────────────────────
 
+/**
+ * Ascending numeric sort. Same result as `.sort((a, b) => a - b)`, but a typed-array
+ * sort is several times faster on the 50,000 customers an uploaded file can hold.
+ */
+export function sortAscending(values: number[]): Float64Array {
+  return Float64Array.from(values).sort()
+}
+
 /** Linear-interpolated quantile of an ascending-sorted array. */
-export function quantileSorted(sorted: number[], q: number): number {
+export function quantileSorted(sorted: ArrayLike<number>, q: number): number {
   if (sorted.length === 0) return 0
   const pos = Math.min(1, Math.max(0, q)) * (sorted.length - 1)
   const lo = Math.floor(pos)
@@ -201,12 +210,12 @@ export function quantileSorted(sorted: number[], q: number): number {
 }
 
 export function median(values: number[]): number {
-  return quantileSorted([...values].sort((a, b) => a - b), 0.5)
+  return quantileSorted(sortAscending(values), 0.5)
 }
 
 /** Share of total spend held by the top `p` of customers. */
 export function topShare(customers: Customer[], p = 0.2): number {
-  const spends = customers.map((c) => c.spend).sort((a, b) => b - a)
+  const spends = sortAscending(customers.map((c) => c.spend)).reverse()
   const total = spends.reduce((s, v) => s + v, 0)
   const k = Math.round(spends.length * p)
   let top = 0
@@ -227,7 +236,7 @@ export interface ExtremeResult {
 }
 
 export function detectExtremes(customers: Customer[]): ExtremeResult {
-  const logs = customers.filter((c) => c.spend > 0).map((c) => Math.log(c.spend)).sort((a, b) => a - b)
+  const logs = sortAscending(customers.filter((c) => c.spend > 0).map((c) => Math.log(c.spend)))
   const q1 = quantileSorted(logs, 0.25)
   const q3 = quantileSorted(logs, 0.75)
   const limit = logs.length ? Math.exp(q3 + 3 * (q3 - q1)) : Infinity
@@ -312,7 +321,7 @@ export function enforceIncreasing(thresholds: number[], changed = 0, minGap = 1)
 }
 
 export function suggestThresholds(customers: Customer[], tierCount: number): number[] {
-  const sorted = customers.map((c) => c.spend).sort((a, b) => a - b)
+  const sorted = sortAscending(customers.map((c) => c.spend))
   const shares = SUGGESTED_TOP_SHARES[tierCount] ?? SUGGESTED_TOP_SHARES[2]
   return enforceIncreasing(shares.map((s) => niceRound(quantileSorted(sorted, 1 - s))), shares.length - 1)
 }
@@ -392,9 +401,9 @@ export function complexity(params: Pick<ProgrammeParams, "windowMonths" | "softL
 
 /** Where each threshold sits as a percentile of all customers, and the spend at that percentile without extreme customers. */
 export function percentileShift(customers: Customer[], flags: boolean[], thresholds: number[]): PercentileShift {
-  const all = customers.map((c) => c.spend).sort((a, b) => a - b)
-  const clean = customers.filter((_, i) => !flags[i]).map((c) => c.spend).sort((a, b) => a - b)
-  const mean = (a: number[]) => (a.length ? a.reduce((s, v) => s + v, 0) / a.length : 0)
+  const all = sortAscending(customers.map((c) => c.spend))
+  const clean = sortAscending(customers.filter((_, i) => !flags[i]).map((c) => c.spend))
+  const mean = (a: Float64Array) => (a.length ? a.reduce((s, v) => s + v, 0) / a.length : 0)
   const rows = thresholds.map((threshold, i) => {
     const below = lowerBound(all, threshold)
     const percentile = all.length ? below / all.length : 0
@@ -403,7 +412,7 @@ export function percentileShift(customers: Customer[], flags: boolean[], thresho
   return { meanAll: mean(all), meanClean: mean(clean), rows }
 }
 
-function lowerBound(sorted: number[], v: number): number {
+function lowerBound(sorted: ArrayLike<number>, v: number): number {
   let lo = 0
   let hi = sorted.length
   while (lo < hi) {
