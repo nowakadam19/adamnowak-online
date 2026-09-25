@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { RoiCalculator } from "@/components/tools/RoiCalculator"
 
 const TITLE = "Loyalty Programme ROI Calculator"
-const DESCRIPTION = "Quantify your loyalty programme's business case. Calculate required lift, revenue impact, and ROI — no control group needed. Free, no registration."
+const DESCRIPTION = "Most loyalty ROI calculators compare members to non-members and call the gap the programme's effect. This one shows that number next to what's left after self-selection. Free, no registration, runs in your browser."
 const URL = "https://www.adamnowak.online/tools/loyalty-roi-calculator"
 
 export const metadata: Metadata = {

@@ -10,13 +10,13 @@ export interface RoiInputs {
   basketUplift: number
   retentionUplift: number
   referralRate: number
+  /** Share (0–90%) of the member vs non-member gap that would exist without the programme */
+  selfSelectionPct: number
   grossMarginPct?: number
   measuredIncremental?: number
 }
 
-export interface RoiResult {
-  activeMembers: number
-  baseRevenue: number
+export interface RoiScenario {
   revenue: {
     frequency: number
     basket: number
@@ -25,27 +25,39 @@ export interface RoiResult {
     total: number
     source: "calculated" | "measured"
   }
+  roi: {
+    revenueMultiple: number
+    standardRoi: number
+    marginRoi: number | undefined
+  }
+  breakevenMonths: number
+}
+
+export interface RoiResult extends RoiScenario {
+  activeMembers: number
+  baseRevenue: number
   costs: {
     points: number
     total: number
     perActiveMember: number
     asPctOfTotalRevenue: number
   }
-  roi: {
-    revenueMultiple: number
-    standardRoi: number
-    marginRoi: number | undefined
-  }
   requiredLift: {
     pct: number
     perMember: number
     risk: "low" | "moderate" | "high"
   }
-  breakevenMonths: number
+  /** Member vs non-member comparison, as vendors report it. Same as the top-level revenue/roi/breakevenMonths. */
+  reported: RoiScenario
+  /** Frequency, basket and retention reduced by selfSelectionPct. Equals `reported` for measured data. */
+  adjusted: RoiScenario
+  selfSelection: {
+    pct: number
+    applied: boolean
+  }
 }
 
-export const ROI_BENCHMARK = { low: 200, high: 400 }
-export const INDUSTRY_UPLIFT_RANGE = { low: 5, high: 20 }
+export const SELF_SELECTION_RANGE = { min: 0, max: 90 }
 
 export const DEFAULT_INPUTS: RoiInputs = {
   totalMembers: 5_000,
@@ -59,10 +71,22 @@ export const DEFAULT_INPUTS: RoiInputs = {
   basketUplift: 5,
   retentionUplift: 3,
   referralRate: 50,
+  selfSelectionPct: 50,
 }
 
 const safe = (numerator: number, denominator: number): number =>
   denominator === 0 ? 0 : numerator / denominator
+
+function scenario(revenue: RoiScenario["revenue"], totalCost: number, grossMarginPct: number | undefined): RoiScenario {
+  const revenueMultiple = safe(revenue.total, totalCost)
+  const standardRoi = totalCost === 0 ? 0 : safe(revenue.total - totalCost, totalCost) * 100
+  const marginRoi =
+    grossMarginPct !== undefined
+      ? safe(revenue.total * (grossMarginPct / 100) - totalCost, totalCost) * 100
+      : undefined
+  const breakevenMonths = safe(totalCost, safe(revenue.total, 12))
+  return { revenue, roi: { revenueMultiple, standardRoi, marginRoi }, breakevenMonths }
+}
 
 export function calculate(inputs: RoiInputs): RoiResult {
   const {
@@ -77,6 +101,7 @@ export function calculate(inputs: RoiInputs): RoiResult {
     basketUplift,
     retentionUplift,
     referralRate,
+    selfSelectionPct,
     grossMarginPct,
     measuredIncremental,
   } = inputs
@@ -88,53 +113,64 @@ export function calculate(inputs: RoiInputs): RoiResult {
   const totalCost = pointsCost + techCost + opsCost + mktCost
   const perActiveMember = safe(totalCost, activeMembers)
 
-  let revenue: RoiResult["revenue"]
+  const selfSelection = Number.isFinite(selfSelectionPct)
+    ? Math.min(SELF_SELECTION_RANGE.max, Math.max(SELF_SELECTION_RANGE.min, selfSelectionPct))
+    : 0
+
+  let reported: RoiScenario
+  let adjusted: RoiScenario
 
   if (measuredIncremental !== undefined) {
-    revenue = {
-      frequency: 0,
-      basket: 0,
-      retention: 0,
-      referral: 0,
-      total: measuredIncremental,
-      source: "measured",
-    }
+    // A control-group measurement already excludes self-selection — no adjustment
+    reported = scenario(
+      { frequency: 0, basket: 0, retention: 0, referral: 0, total: measuredIncremental, source: "measured" },
+      totalCost,
+      grossMarginPct,
+    )
+    adjusted = reported
   } else {
     const frequency = baseRevenue * (freqUplift / 100)
     const basket = baseRevenue * (basketUplift / 100)
     const retention = baseRevenue * (retentionUplift / 100)
     const referral = referralRate * avgSpend
-    revenue = {
-      frequency,
-      basket,
-      retention,
-      referral,
-      total: frequency + basket + retention + referral,
-      source: "calculated",
-    }
-  }
+    reported = scenario(
+      { frequency, basket, retention, referral, total: frequency + basket + retention + referral, source: "calculated" },
+      totalCost,
+      grossMarginPct,
+    )
 
-  const revenueMultiple = safe(revenue.total, totalCost)
-  const standardRoi = totalCost === 0 ? 0 : safe(revenue.total - totalCost, totalCost) * 100
-  const marginRoi =
-    grossMarginPct !== undefined
-      ? safe(revenue.total * (grossMarginPct / 100) - totalCost, totalCost) * 100
-      : undefined
+    // Only the "vs non-members" components carry self-selection; referral does not
+    const keep = 1 - selfSelection / 100
+    const adjFrequency = frequency * keep
+    const adjBasket = basket * keep
+    const adjRetention = retention * keep
+    adjusted = scenario(
+      {
+        frequency: adjFrequency,
+        basket: adjBasket,
+        retention: adjRetention,
+        referral,
+        total: adjFrequency + adjBasket + adjRetention + referral,
+        source: "calculated",
+      },
+      totalCost,
+      grossMarginPct,
+    )
+  }
 
   const requiredLiftPct = safe(totalCost, baseRevenue) * 100
   const requiredLiftPerMember = safe(totalCost, activeMembers)
   const risk: "low" | "moderate" | "high" =
     requiredLiftPct < 3 ? "low" : requiredLiftPct <= 8 ? "moderate" : "high"
 
-  const breakevenMonths = safe(totalCost, safe(revenue.total, 12))
-
   return {
+    ...reported,
     activeMembers,
     baseRevenue,
-    revenue,
-    costs: { points: pointsCost, total: totalCost, perActiveMember, asPctOfTotalRevenue: safe(totalCost, baseRevenue + revenue.total) * 100 },
-    roi: { revenueMultiple, standardRoi, marginRoi },
+    costs: { points: pointsCost, total: totalCost, perActiveMember, asPctOfTotalRevenue: safe(totalCost, baseRevenue + reported.revenue.total) * 100 },
     requiredLift: { pct: requiredLiftPct, perMember: requiredLiftPerMember, risk },
-    breakevenMonths,
+    reported,
+    adjusted,
+    selfSelection: { pct: selfSelection, applied: measuredIncremental === undefined && selfSelection > 0 },
   }
 }

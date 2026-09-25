@@ -40,6 +40,7 @@ const BASE: RoiInputs = {
   basketUplift: 0,
   retentionUplift: 0,
   referralRate: 0,
+  selfSelectionPct: 0,
 }
 
 describe("Test 1 — base case (hand-verified)", () => {
@@ -236,4 +237,71 @@ describe("Test 7 — fixed costs only", () => {
   it("requiredLift.risk = high", () => expect(result.requiredLift.risk).toBe("high"))
   it("costs.perActiveMember = 200", () =>
     expect(result.costs.perActiveMember).toBe(200))
+})
+
+// ─────────────────────────────────────────────────────────────
+// Test case 8 — Self-selection adjustment
+// ─────────────────────────────────────────────────────────────
+// Same inputs as Test 2: frequency 50,000 · basket 25,000 ·
+// retention 40,000 · referral 100,000 · totalCost 10,000
+//
+// selfSelectionPct: 50 → the three "vs non-members" components halve
+//   frequency 25,000 · basket 12,500 · retention 20,000
+//   referral unchanged 100,000 → total 157,500
+//   revenueMultiple 15.75 · standardRoi 1475%
+//   breakeven 10,000 / (157,500/12) = 0.76 months
+// ─────────────────────────────────────────────────────────────
+
+describe("Test 8 — self-selection adjustment", () => {
+  const ALL: RoiInputs = {
+    ...BASE,
+    basketUplift: 5,
+    retentionUplift: 8,
+    referralRate: 100,
+  }
+
+  it("0% → adjusted equals reported", () => {
+    const result = calculate({ ...ALL, selfSelectionPct: 0 })
+    expect(result.adjusted).toEqual(result.reported)
+    expect(result.selfSelection.applied).toBe(false)
+  })
+
+  describe("50% → frequency, basket, retention halve; referral unchanged", () => {
+    const result = calculate({ ...ALL, selfSelectionPct: 50, grossMarginPct: 40 })
+
+    it("reported is untouched", () => {
+      expect(result.reported.revenue.total).toBe(215_000)
+      expect(result.reported.roi.standardRoi).toBe(2050)
+      expect(result.revenue.total).toBe(215_000)
+    })
+    it("adjusted.frequency", () => expect(result.adjusted.revenue.frequency).toBe(25_000))
+    it("adjusted.basket", () => expect(result.adjusted.revenue.basket).toBe(12_500))
+    it("adjusted.retention", () => expect(result.adjusted.revenue.retention).toBe(20_000))
+    it("adjusted.referral unchanged", () => expect(result.adjusted.revenue.referral).toBe(100_000))
+    it("adjusted.total", () => expect(result.adjusted.revenue.total).toBe(157_500))
+    it("adjusted.revenueMultiple", () => expect(result.adjusted.roi.revenueMultiple).toBe(15.75))
+    it("adjusted.standardRoi", () => expect(result.adjusted.roi.standardRoi).toBe(1475))
+    // (157,500 × 0.40 − 10,000) / 10,000 × 100 = 530%
+    it("adjusted.marginRoi", () => expect(result.adjusted.roi.marginRoi).toBe(530))
+    it("adjusted.breakevenMonths", () => expect(r(result.adjusted.breakevenMonths)).toBe(0.76))
+    it("selfSelection.applied", () => expect(result.selfSelection.applied).toBe(true))
+  })
+
+  it("measured incremental → no adjustment, adjusted equals reported", () => {
+    const result = calculate({ ...ALL, selfSelectionPct: 70, measuredIncremental: 80_000 })
+    expect(result.adjusted).toEqual(result.reported)
+    expect(result.adjusted.revenue.total).toBe(80_000)
+    expect(result.selfSelection.applied).toBe(false)
+  })
+
+  it("required lift does not depend on self-selection", () => {
+    const a = calculate({ ...ALL, selfSelectionPct: 0 })
+    const b = calculate({ ...ALL, selfSelectionPct: 90 })
+    expect(b.requiredLift).toEqual(a.requiredLift)
+  })
+
+  it("out-of-range values are clamped to 0–90%", () => {
+    expect(calculate({ ...ALL, selfSelectionPct: 200 }).selfSelection.pct).toBe(90)
+    expect(calculate({ ...ALL, selfSelectionPct: -10 }).selfSelection.pct).toBe(0)
+  })
 })
