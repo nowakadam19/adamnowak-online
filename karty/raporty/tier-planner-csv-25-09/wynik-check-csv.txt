@@ -1,0 +1,38 @@
+✅ 360 paths A and B: results shown, sample data still flags 18 extreme customers
+✅ 360 empty: no horizontal scroll (360 ≤ 360)
+✅ 360 header error shown: "We couldn't find a column named 'annual_spend'. Please use the template. Download the template"
+✅ 360 header error: no results computed
+✅ 360 header error: no horizontal scroll (360 ≤ 360)
+✅ 360 mixed file: 400 rows loaded, 26 rows skipped (11: invalid spend, 9: missing values, 6: zero purchases with spend).
+✅ 360 mixed: no horizontal scroll (360 ≤ 360)
+✅ 360 sampling: message under the upload zone and at the results (2×), loaded in 261 ms
+   360 sampled file: tier customer counts 4,048 / 16,125 / 59,827 (scaled to 80,000)
+✅ 360 sampled: no horizontal scroll (360 ≤ 360)
+   360 (CPU ×4 slower) slider step on 50,000 customers, ms until thumb/field moved / until tier cards updated: 341/376, 353/378, 321/343, 338/364, 417/457
+✅ 360 valid template file loaded
+✅ 360 replacing the file clears the sampling message
+✅ 360 valid: no horizontal scroll (360 ≤ 360)
+✅ 360 share note visible for CSV
+✅ 360 URL has d=c and no data
+✅ 360 opened link asks for the file
+✅ 360 no request sends file contents (4 requests after load: /favicon.ico)
+✅ 360 no JS errors
+✅ 1280 paths A and B: results shown, sample data still flags 18 extreme customers
+✅ 1280 empty: no horizontal scroll (1280 ≤ 1280)
+✅ 1280 header error shown: "We couldn't find a column named 'annual_spend'. Please use the template. Download the template"
+✅ 1280 header error: no results computed
+✅ 1280 header error: no horizontal scroll (1280 ≤ 1280)
+✅ 1280 mixed file: 400 rows loaded, 26 rows skipped (11: invalid spend, 9: missing values, 6: zero purchases with spend).
+✅ 1280 mixed: no horizontal scroll (1280 ≤ 1280)
+✅ 1280 sampling: message under the upload zone and at the results (2×), loaded in 264 ms
+   1280 sampled file: tier customer counts 4,048 / 16,125 / 59,827 (scaled to 80,000)
+✅ 1280 sampled: no horizontal scroll (1280 ≤ 1280)
+   1280 slider step on 50,000 customers, ms until thumb/field moved / until tier cards updated: 82/89, 74/78, 71/76, 67/72, 64/68
+✅ 1280 valid template file loaded
+✅ 1280 replacing the file clears the sampling message
+✅ 1280 valid: no horizontal scroll (1280 ≤ 1280)
+✅ 1280 share note visible for CSV
+✅ 1280 URL has d=c and no data
+✅ 1280 opened link asks for the file
+✅ 1280 no request sends file contents (4 requests after load: /favicon.ico)
+✅ 1280 no JS errors

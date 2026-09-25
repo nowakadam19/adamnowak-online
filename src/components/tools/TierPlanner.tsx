@@ -1,17 +1,19 @@
 "use client"
 
-import { useState, useMemo, useEffect, useLayoutEffect, useCallback, useRef, useId } from "react"
+import { useState, useMemo, useEffect, useLayoutEffect, useCallback, useDeferredValue, useRef, useId } from "react"
 import { createPortal } from "react-dom"
 import {
   analysisPopulation,
   approxBasket,
   approximateCustomers,
+  detectExtremes,
   enforceIncreasing,
   logHistogram,
   niceRound,
   planTiers,
   quantileSorted,
   sampleCustomers,
+  sortAscending,
   suggestThresholds,
   thresholdChange,
   tierOf,
@@ -30,12 +32,23 @@ import {
   type PlannerResult,
   type ThresholdChange,
 } from "@/lib/tier-calculations"
+import {
+  checkCsvFile,
+  csvSampleSentence,
+  csvSummarySentence,
+  parseCustomerCsv,
+  CSV_FEW_ROWS,
+  CSV_ROW_LIMIT,
+  CSV_TEMPLATE_URL,
+  type CsvFailure,
+  type CsvSuccess,
+} from "@/lib/tier-csv"
 
 // ─────────────────────────────────────────────────────────────
 // State and URL
 // ─────────────────────────────────────────────────────────────
 
-type Source = "approx" | "sample"
+type Source = "approx" | "sample" | "csv"
 
 interface PlannerState {
   source: Source
@@ -55,7 +68,11 @@ interface PlannerState {
 
 const DEFAULT_TIER_COUNT = 2
 
-function customersFor(source: Source, approx: ApproxInputs): Customer[] {
+/** Path C: customers from the uploaded file, kept in memory only (never in the URL). */
+type CsvData = CsvSuccess & { fileName: string }
+
+function customersFor(source: Source, approx: ApproxInputs, csv: CsvData | null = null): Customer[] {
+  if (source === "csv") return csv?.customers ?? []
   return source === "sample" ? sampleCustomers() : approximateCustomers(approx)
 }
 
@@ -80,7 +97,8 @@ const CODE_BENEFITS: Record<string, BenefitType> = { d: "discount", o: "operatio
 
 function stateToParams(s: PlannerState): URLSearchParams {
   const p = new URLSearchParams()
-  p.set("d", s.source === "sample" ? "s" : "a")
+  // Uploaded data never goes into the link: only the programme settings do
+  p.set("d", s.source === "sample" ? "s" : s.source === "csv" ? "c" : "a")
   if (s.source === "approx") {
     p.set("n", String(s.approx.customers))
     p.set("md", String(s.approx.medianSpend))
@@ -110,7 +128,7 @@ function paramsToState(p: URLSearchParams): PlannerState {
   const list = (key: string) => (p.get(key) ?? "").split(",").map(Number).filter((n) => !isNaN(n) && n > 0)
   const pick = <T extends number>(v: number, allowed: T[], fallback: T): T => (allowed.includes(v as T) ? (v as T) : fallback)
 
-  const source: Source = p.get("d") === "s" ? "sample" : "approx"
+  const source: Source = p.get("d") === "s" ? "sample" : p.get("d") === "c" ? "csv" : "approx"
   const approx: ApproxInputs = {
     customers: num("n", DEFAULT_APPROX.customers, 100, 100_000_000),
     medianSpend: num("md", DEFAULT_APPROX.medianSpend, 1, 1_000_000),
@@ -118,7 +136,8 @@ function paramsToState(p: URLSearchParams): PlannerState {
     purchasesPerYear: num("pf", DEFAULT_APPROX.purchasesPerYear, 0.1, 1_000),
   }
   const tierCount = Math.round(num("k", DEFAULT_TIER_COUNT, 1, MAX_TIERS))
-  const suggested = suggestThresholds(customersFor(source, approx), tierCount)
+  // A CSV link carries no data: fall back to the default approximation for any missing threshold
+  const suggested = suggestThresholds(customersFor(source === "csv" ? "approx" : source, approx), tierCount)
   const given = list("t")
   const thresholds = enforceIncreasing(suggested.map((v, i) => given[i] ?? v), 0)
 
@@ -365,12 +384,14 @@ function ThresholdSlider({ label, tooltip, value, min, max, onChange }: Omit<Ran
   )
 }
 
-function Segmented<T extends string | number>({ label, options, value, onChange }: {
+function Segmented<T extends string | number>({ label, options, value, onChange, fitLabels = false }: {
   label: string; options: { value: T; label: string }[]; value: T; onChange: (v: T) => void
+  /** Columns sized to their labels instead of equal widths, so a longer label wraps less on narrow screens */
+  fitLabels?: boolean
 }) {
   return (
     <div role="radiogroup" aria-label={label} className="grid gap-1 rounded-md p-1"
-      style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))`, background: "var(--paper)" }}>
+      style={{ gridTemplateColumns: fitLabels ? `repeat(${options.length}, auto)` : `repeat(${options.length}, minmax(0, 1fr))`, background: "var(--paper)" }}>
       {options.map((o) => {
         const active = o.value === value
         return (
@@ -443,6 +464,114 @@ function OutCard({ title, children }: { title: React.ReactNode; children: React.
 }
 
 // ─────────────────────────────────────────────────────────────
+// Path C — CSV upload (the file never leaves the browser)
+// ─────────────────────────────────────────────────────────────
+
+type CsvStatus =
+  | { kind: "idle" }
+  | { kind: "loading"; fileName: string; progress: number | null }
+  | { kind: "error"; fileName: string; error: CsvFailure }
+
+const PRIVACY_SENTENCE = "Your file is read by your browser only. Nothing is uploaded or stored."
+
+function TemplateLink({ children = "Download the template" }: { children?: React.ReactNode }) {
+  return (
+    <a href={CSV_TEMPLATE_URL} download="loyalty-tier-planner-template.csv" className="underline font-medium"
+      style={{ color: "var(--green)" }}>{children}</a>
+  )
+}
+
+function CsvUpload({ status, csv, linkWithoutData, onFile }: {
+  status: CsvStatus; csv: CsvData | null; linkWithoutData: boolean; onFile: (file: File) => void
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [dragging, setDragging] = useState(false)
+  const loading = status.kind === "loading"
+  const pick = () => inputRef.current?.click()
+
+  return (
+    <div className="mt-3">
+      <div
+        onDragOver={(e) => { e.preventDefault(); if (!loading) setDragging(true) }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault()
+          setDragging(false)
+          const file = e.dataTransfer.files?.[0]
+          if (file && !loading) onFile(file)
+        }}
+        className="rounded-md border-2 border-dashed px-4 py-4 text-center transition-colors"
+        style={{ borderColor: dragging ? "var(--gl)" : "rgba(10,10,8,0.2)", background: dragging ? "rgba(76,175,125,0.08)" : "var(--paper)" }}>
+        <input ref={inputRef} type="file" accept=".csv,text/csv" className="sr-only" tabIndex={-1} aria-hidden="true"
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            if (file) onFile(file)
+            e.target.value = ""
+          }} />
+        {loading ? (
+          <div role="status" className="flex items-center justify-center gap-2.5 min-h-[44px] text-[13px]">
+            <span aria-hidden="true" className="tp-spin inline-block w-4 h-4 rounded-full border-2 flex-shrink-0"
+              style={{ borderColor: "rgba(10,10,8,0.15)", borderTopColor: "var(--gl)" }} />
+            <span className="min-w-0 truncate">
+              {status.progress === null ? "Checking rows…" : `Reading ${status.fileName}… ${Math.round(status.progress * 100)}%`}
+            </span>
+          </div>
+        ) : csv ? (
+          <div className="flex items-center justify-between gap-3 text-left">
+            <span className="min-w-0">
+              <span className="block text-[10px] tracking-[0.12em] uppercase" style={{ color: "var(--muted)", fontFamily: "Syne, sans-serif" }}>Your file</span>
+              <span className="block text-[13px] font-medium truncate">{csv.fileName}</span>
+            </span>
+            <button type="button" onClick={pick}
+              className="min-h-[44px] flex-shrink-0 text-[11px] tracking-[0.08em] uppercase px-3 py-2 rounded border"
+              style={{ fontFamily: "Syne, sans-serif", borderColor: "var(--border)", color: "var(--ink)", background: "var(--card)" }}>Replace file</button>
+          </div>
+        ) : (
+          <>
+            <button type="button" onClick={pick}
+              className="min-h-[44px] w-full sm:w-auto text-[11px] tracking-[0.08em] uppercase px-4 py-2 rounded border"
+              style={{ fontFamily: "Syne, sans-serif", background: "var(--green)", color: "#fff", borderColor: "var(--green)" }}>Choose a CSV file</button>
+            <p className="hidden sm:block text-[12px] mt-2" style={{ color: "var(--muted)" }}>or drag it here</p>
+          </>
+        )}
+      </div>
+
+      <p className="text-[12px] leading-snug mt-2" style={{ color: "var(--muted)" }}>
+        Columns: <code>annual_spend</code> and <code>purchases</code>, one row per customer; <code>customer_id</code> is optional and not used. <TemplateLink />.
+      </p>
+      <p className="text-[12px] leading-snug mt-1" style={{ color: "var(--muted)" }}>{PRIVACY_SENTENCE}</p>
+
+      {status.kind === "error" && (
+        <div role="alert" className="mt-3 rounded-md px-3 py-2.5 text-[13px] leading-snug"
+          style={{ background: "rgba(176,58,46,0.08)", color: "#8a2c22", border: "1px solid rgba(176,58,46,0.25)" }}>
+          <span className="block text-[11px] mb-0.5 truncate" style={{ fontFamily: "Syne, sans-serif" }}>{status.fileName}</span>
+          {status.error.message}{" "}
+          <TemplateLink />
+        </div>
+      )}
+
+      {status.kind !== "error" && !csv && linkWithoutData && !loading && (
+        <p className="mt-3 rounded-md px-3 py-2.5 text-[12px] leading-snug" style={{ background: "var(--paper)" }}>
+          This link keeps the programme settings but not the data. Upload your file to see results with these settings.
+        </p>
+      )}
+
+      {csv && !loading && status.kind !== "error" && (
+        <div role="status" className="mt-3 rounded-md px-3 py-2.5 text-[12px] leading-snug space-y-1.5" style={{ background: "var(--paper)" }}>
+          <p className="font-medium" style={{ color: "var(--ink)" }}>{csvSummarySentence(csv)}</p>
+          {csv.validRows === 0 ? (
+            <p style={{ color: "#8a2c22" }}>None of the rows can be used, so there is nothing to show yet. Check the file against the template.</p>
+          ) : csv.validRows < CSV_FEW_ROWS ? (
+            <p style={{ color: "#7a5520" }}>Only {plural(csv.validRows, "customer")}. Results from so few customers are unstable: one customer can move a threshold or change a tier&apos;s share.</p>
+          ) : null}
+          {csv.sampled && <p style={{ color: "#7a5520" }}>{csvSampleSentence(csv)}</p>}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────
 // Distribution chart (hand-drawn SVG, log spend axis)
 // ─────────────────────────────────────────────────────────────
 
@@ -462,17 +591,21 @@ function DistributionChart({ customers, flags, thresholds, names, excludeExtreme
     return () => ro.disconnect()
   }, [])
 
-  const domain = useMemo(() => {
-    const sorted = customers.map((c) => c.spend).filter((s) => s > 0).sort((a, b) => a - b)
+  // Sorting and binning depend on the data only, so moving a threshold does not redo them
+  const dataRange = useMemo(() => {
+    const sorted = sortAscending(customers.map((c) => c.spend).filter((s) => s > 0))
     const anyExtreme = flags.some(Boolean)
-    let lo = Math.max(1, quantileSorted(sorted, 0.005))
-    let hi = anyExtreme ? sorted[sorted.length - 1] : quantileSorted(sorted, 0.999)
-    lo = Math.min(lo, thresholds[0] / 1.5)
-    hi = Math.max(hi, thresholds[thresholds.length - 1] * 1.5)
-    return { lo, hi }
-  }, [customers, flags, thresholds])
+    return {
+      lo: Math.max(1, quantileSorted(sorted, 0.005)),
+      hi: anyExtreme ? sorted[sorted.length - 1] : quantileSorted(sorted, 0.999),
+    }
+  }, [customers, flags])
+  const domain = {
+    lo: Math.min(dataRange.lo, thresholds[0] / 1.5),
+    hi: Math.max(dataRange.hi, thresholds[thresholds.length - 1] * 1.5),
+  }
 
-  const bins = useMemo(() => logHistogram(customers, flags, domain.lo, domain.hi, 48), [customers, flags, domain])
+  const bins = useMemo(() => logHistogram(customers, flags, domain.lo, domain.hi, 48), [customers, flags, domain.lo, domain.hi])
   const height = 200
   const pad = { l: 6, r: 6, t: 40, b: 26 }
   const innerW = width - pad.l - pad.r
@@ -550,9 +683,11 @@ function DistributionChart({ customers, flags, thresholds, names, excludeExtreme
 // Summary text for "Copy summary"
 // ─────────────────────────────────────────────────────────────
 
-function buildSummary(s: PlannerState, r: PlannerResult, change: ThresholdChange | null): string {
+function buildSummary(s: PlannerState, r: PlannerResult, change: ThresholdChange | null, csv: CsvData | null): string {
   const line = "━".repeat(44)
-  const data = s.source === "sample"
+  const data = s.source === "csv" && csv
+    ? `Uploaded CSV file: ${csvSummarySentence(csv)}${csv.sampled ? ` ${csvSampleSentence(csv)}` : ""}`
+    : s.source === "sample"
     ? `Sample data (${fmtInt(SAMPLE_SIZE)} fictional customers)`
     : `Approximation from four numbers: ${fmtInt(s.approx.customers)} customers, median ${fmtEur(s.approx.medianSpend)} a year, top 20% = ${s.approx.top20SharePct}% of revenue, ${s.approx.purchasesPerYear} purchases a year`
   const tiers = r.tiers.map((t) => {
@@ -592,12 +727,24 @@ Source: adamnowak.online/tools/loyalty-tier-planner`
 
 export function TierPlanner() {
   const [state, setState] = useState<PlannerState>(DEFAULT_STATE)
+  const [csv, setCsv] = useState<CsvData | null>(null)
+  const [csvStatus, setCsvStatus] = useState<CsvStatus>({ kind: "idle" })
+  // A shared CSV link restores settings without data; its thresholds are kept for the first file uploaded
+  const [linkWithoutData, setLinkWithoutData] = useState(false)
+  const keepLinkThresholds = useRef(false)
+  const loadToken = useRef(0)
 
   useEffect(() => {
     // Restore a shared link after mount; the server render has no URL params
     const params = new URLSearchParams(window.location.search)
+    if (!params.toString()) return
+    const restored = paramsToState(params)
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (params.toString()) setState(paramsToState(params))
+    setState(restored)
+    if (restored.source === "csv") {
+      setLinkWithoutData(true)
+      keepLinkThresholds.current = params.has("t")
+    }
   }, [])
 
   const [copied, setCopied] = useState<"" | "summary" | "link">("")
@@ -610,12 +757,19 @@ export function TierPlanner() {
     window.history.replaceState(null, "", `${window.location.pathname}?${stateToParams(state).toString()}`)
   }, [state])
 
-  const customers = useMemo(() => customersFor(state.source, state.approx), [state.source, state.approx])
-  const weight = state.source === "approx" ? state.approx.customers / APPROX_SAMPLE_SIZE : 1
-  const result = useMemo(() => planTiers(customers, state, weight), [customers, state, weight])
-  const flags = result.extremes.flags
+  const customers = useMemo(() => customersFor(state.source, state.approx, csv), [state.source, state.approx, csv])
+  // Path A: each point stands for customers ÷ 5,000; path C with sampling: valid rows ÷ sample size
+  const weight = state.source === "approx"
+    ? state.approx.customers / APPROX_SAMPLE_SIZE
+    : state.source === "csv" && csv && csv.customers.length > 0 ? csv.validRows / csv.customers.length : 1
+  const hasData = customers.length > 0
+  // Results follow the inputs with a short lag, so sliders stay smooth on up to 50,000 uploaded customers
+  const calc = useDeferredValue(state)
+  const result = useMemo(() => planTiers(customers, calc, weight), [customers, calc, weight])
+  // Same flags as result.extremes.flags, but stable while only the programme settings change
+  const flags = useMemo(() => detectExtremes(customers).flags, [customers])
 
-  const { current, thresholds, excludeExtremes, softLanding } = state
+  const { current, thresholds, excludeExtremes, softLanding } = calc
   const change = useMemo(() => {
     if (!current) return null
     const population = analysisPopulation(customers, flags, excludeExtremes)
@@ -624,8 +778,8 @@ export function TierPlanner() {
 
   // Slider range ignores extreme customers so it stays usable
   const sliderRange = useMemo(() => {
-    const all = customers.map((c) => c.spend).sort((a, b) => a - b)
-    const clean = customers.filter((_, i) => !flags[i]).map((c) => c.spend).sort((a, b) => a - b)
+    const all = sortAscending(customers.map((c) => c.spend))
+    const clean = sortAscending(customers.filter((_, i) => !flags[i]).map((c) => c.spend))
     const min = Math.max(1, niceRound(quantileSorted(all, 0.02)))
     const max = Math.max(min * 10, niceRound(quantileSorted(clean, 0.999) * 2))
     return { min, max }
@@ -634,15 +788,57 @@ export function TierPlanner() {
   const update = useCallback((patch: Partial<PlannerState>) => setState((prev) => ({ ...prev, ...patch })), [])
   const setApprox = (key: keyof ApproxInputs) => (v: number) => setState((prev) => ({ ...prev, approx: { ...prev.approx, [key]: v } }))
 
-  const setSource = (source: Source) => setState((prev) => prev.source === source ? prev : ({
-    ...prev,
-    source,
-    thresholds: suggestThresholds(customersFor(source, prev.approx), prev.tierCount),
-  }))
+  const setSource = (source: Source) => setState((prev) => {
+    if (prev.source === source) return prev
+    const next = customersFor(source, prev.approx, csv)
+    // Without an uploaded file there is nothing to suggest from yet; keep the thresholds
+    return { ...prev, source, thresholds: next.length ? suggestThresholds(next, prev.tierCount) : prev.thresholds }
+  })
+
+  const loadFile = (file: File) => {
+    const token = ++loadToken.current
+    const fail = (error: CsvFailure) => {
+      if (token !== loadToken.current) return
+      setCsv(null)
+      setCsvStatus({ kind: "error", fileName: file.name, error })
+    }
+    const refused = checkCsvFile(file)
+    if (refused) return fail(refused)
+    setCsvStatus({ kind: "loading", fileName: file.name, progress: 0 })
+    // Read locally with FileReader: the contents are never sent anywhere
+    const reader = new FileReader()
+    reader.onprogress = (e) => {
+      if (token === loadToken.current && e.lengthComputable) setCsvStatus({ kind: "loading", fileName: file.name, progress: e.loaded / e.total })
+    }
+    reader.onerror = () => fail({ ok: false, kind: "format", message: "We couldn't read this file. It may be damaged or still open in another program." })
+    reader.onload = () => {
+      if (token !== loadToken.current) return
+      setCsvStatus({ kind: "loading", fileName: file.name, progress: null })
+      // Let the "Checking rows" state paint before parsing, which can take a moment near 50,000 rows
+      setTimeout(() => {
+        if (token !== loadToken.current) return
+        const parsed = parseCustomerCsv(typeof reader.result === "string" ? reader.result : "")
+        if (!parsed.ok) return fail(parsed)
+        const data: CsvData = { ...parsed, fileName: file.name }
+        const keep = keepLinkThresholds.current
+        keepLinkThresholds.current = false
+        setCsv(data)
+        setCsvStatus({ kind: "idle" })
+        setLinkWithoutData(false)
+        setState((prev) => ({
+          ...prev,
+          source: "csv",
+          thresholds: keep || data.customers.length === 0 ? prev.thresholds : suggestThresholds(data.customers, prev.tierCount),
+        }))
+      }, 30)
+    }
+    reader.readAsText(file)
+  }
 
   const setTierCount = (tierCount: number) => setState((prev) => {
     if (tierCount === prev.tierCount) return prev
-    const suggested = suggestThresholds(customersFor(prev.source, prev.approx), tierCount)
+    const base = customersFor(prev.source, prev.approx, csv)
+    const suggested = suggestThresholds(base.length ? base : customersFor("approx", prev.approx), tierCount)
     const kept = prev.thresholds.slice(0, tierCount)
     const merged = suggested.map((v, i) => kept[i] ?? Math.max(v, niceRound((kept[kept.length - 1] ?? v) * 1.6)))
     return { ...prev, tierCount, thresholds: enforceIncreasing(merged, Math.max(0, kept.length - 1)) }
@@ -671,11 +867,18 @@ export function TierPlanner() {
   const nameOf = (i: number) => state.names[i]?.trim() || DEFAULT_NAMES[i]
   const displayNames = DEFAULT_NAMES.map((_, i) => nameOf(i))
 
-  const reset = () => setState(DEFAULT_STATE)
+  const reset = () => {
+    loadToken.current++
+    keepLinkThresholds.current = false
+    setCsv(null)
+    setCsvStatus({ kind: "idle" })
+    setLinkWithoutData(false)
+    setState(DEFAULT_STATE)
+  }
 
   const flash = (kind: "summary" | "link") => { setCopied(kind); setTimeout(() => setCopied(""), 2500) }
   const copySummary = () => {
-    navigator.clipboard.writeText(buildSummary({ ...state, names: displayNames }, result, change)).then(() => flash("summary"))
+    navigator.clipboard.writeText(buildSummary({ ...state, names: displayNames }, result, change, csv)).then(() => flash("summary"))
   }
   const shareUrl = () => { navigator.clipboard.writeText(window.location.href).then(() => flash("link")) }
   const scrollToResults = () => document.getElementById("tier-results")?.scrollIntoView({ behavior: "smooth", block: "start" })
@@ -704,9 +907,11 @@ export function TierPlanner() {
   const dataSection = (
     <div className="mb-6">
       <SectionTitle>Your customers</SectionTitle>
-      <Segmented<Source> label="Data source" value={state.source} onChange={setSource}
-        options={[{ value: "approx", label: "I don't have a file" }, { value: "sample", label: "Try sample data" }]} />
-      {state.source === "approx" ? (
+      <Segmented<Source> label="Data source" value={state.source} onChange={setSource} fitLabels
+        options={[{ value: "approx", label: "I don't have a file" }, { value: "sample", label: "Try sample data" }, { value: "csv", label: "Upload your own data (CSV)" }]} />
+      {state.source === "csv" ? (
+        <CsvUpload status={csvStatus} csv={csv} linkWithoutData={linkWithoutData} onFile={loadFile} />
+      ) : state.source === "approx" ? (
         <div className="mt-3">
           <FieldRow label="Active customers" tooltip="Customers who bought at least once in the last 12 months.">
             <NumberField label="Active customers" value={state.approx.customers} min={100} max={100_000_000} onChange={setApprox("customers")} />
@@ -758,7 +963,7 @@ export function TierPlanner() {
           }
         </summary>
         <div className="px-4 pb-4 text-[13px] leading-relaxed space-y-2" style={{ color: "var(--muted)" }}>
-          <p><strong style={{ color: "var(--ink)" }}>1. Describe your customers.</strong> Enter four numbers about their spend and how often they buy, or try the sample data.</p>
+          <p><strong style={{ color: "var(--ink)" }}>1. Describe your customers.</strong> Enter four numbers about their spend and how often they buy, try the sample data, or upload your own CSV file.</p>
           <p><strong style={{ color: "var(--ink)" }}>2. Place the thresholds.</strong> Choose how many tiers sit above the base level and drag each threshold. The dashed lines on the chart move with you.</p>
           <p><strong style={{ color: "var(--ink)" }}>3. Add margin and benefits.</strong> Pick a benefit for each tier and read its cost against the margin that tier brings, along with how many purchases separate a typical member from the next tier.</p>
           <p><strong style={{ color: "var(--ink)" }}>4. Test a change.</strong> Save today&apos;s thresholds with Set as current programme, then move them to see how many current members would lose status.</p>
@@ -769,104 +974,106 @@ export function TierPlanner() {
         <div id="tier-inputs" className="p-5 lg:border-r min-w-0" style={{ borderColor: "var(--border)" }}>
           {dataSection}
 
-          <div className="lg:hidden mb-6">{chart}</div>
+          {hasData && (<>
+            <div className="lg:hidden mb-6">{chart}</div>
 
-          <SectionTitle>Tiers and thresholds</SectionTitle>
-          <div className="mb-4">
-            <div className="text-[12.5px] font-medium mb-1.5">Tiers above the base level</div>
-            <Segmented<number> label="Tiers above the base level" value={state.tierCount} onChange={setTierCount}
-              options={[1, 2, 3, 4].map((n) => ({ value: n, label: String(n) }))} />
-          </div>
+            <SectionTitle>Tiers and thresholds</SectionTitle>
+            <div className="mb-4">
+              <div className="text-[12.5px] font-medium mb-1.5">Tiers above the base level</div>
+              <Segmented<number> label="Tiers above the base level" value={state.tierCount} onChange={setTierCount}
+                options={[1, 2, 3, 4].map((n) => ({ value: n, label: String(n) }))} />
+            </div>
 
-          <div className="rounded-md p-3 mb-3" style={{ background: "var(--paper)" }}>
-            <FieldRow label="Base level name">
-              <input type="text" value={state.names[0]} aria-label="Base level name" maxLength={24}
-                onChange={(e) => setName(0, e.target.value)} onBlur={(e) => { if (!e.target.value.trim()) setName(0, DEFAULT_NAMES[0]) }}
-                className="text-right text-[16px] w-[9rem] min-h-[44px] flex-shrink-0 bg-transparent border-b focus:outline-none"
-                style={{ borderColor: "var(--border)", color: "var(--ink)" }} />
-            </FieldRow>
-          </div>
+            <div className="rounded-md p-3 mb-3" style={{ background: "var(--paper)" }}>
+              <FieldRow label="Base level name">
+                <input type="text" value={state.names[0]} aria-label="Base level name" maxLength={24}
+                  onChange={(e) => setName(0, e.target.value)} onBlur={(e) => { if (!e.target.value.trim()) setName(0, DEFAULT_NAMES[0]) }}
+                  className="text-right text-[16px] w-[9rem] min-h-[44px] flex-shrink-0 bg-transparent border-b focus:outline-none"
+                  style={{ borderColor: "var(--border)", color: "var(--ink)" }} />
+              </FieldRow>
+            </div>
 
-          {state.thresholds.map((t, i) => {
-            const benefit = state.benefits[i]
-            return (
-              <div key={i} className="rounded-md p-3 mb-3" style={{ background: "var(--paper)" }}>
-                <FieldRow label={`Tier ${i + 1} name`}>
-                  <input type="text" value={state.names[i + 1]} aria-label={`Tier ${i + 1} name`} maxLength={24}
-                    onChange={(e) => setName(i + 1, e.target.value)} onBlur={(e) => { if (!e.target.value.trim()) setName(i + 1, DEFAULT_NAMES[i + 1]) }}
-                    className="text-right text-[16px] font-semibold w-[9rem] min-h-[44px] flex-shrink-0 bg-transparent border-b focus:outline-none"
-                    style={{ borderColor: "var(--border)", color: "var(--ink)" }} />
-                </FieldRow>
-                <ThresholdSlider label={`Spend to reach ${displayNames[i + 1]}`}
-                  tooltip="Annual spend a customer needs to reach this tier. Each threshold stays above the one below it."
-                  value={t} min={sliderRange.min} max={sliderRange.max} onChange={setThreshold(i)} />
-                <FieldRow label="Benefit" tooltip="Discount: a % off everything the tier buys. Operational (e.g. free delivery, priority service) and recognition (e.g. early access, a named contact): your cost per member a year.">
-                  <select value={benefit.type} aria-label={`${displayNames[i + 1]} benefit type`}
-                    onChange={(e) => setBenefit(i, { type: e.target.value as BenefitType })}
-                    className="text-[16px] min-h-[44px] w-[9rem] flex-shrink-0 bg-transparent border-b focus:outline-none"
-                    style={{ borderColor: "var(--border)", color: "var(--ink)" }}>
-                    <option value="discount">Discount %</option>
-                    <option value="operational">Operational</option>
-                    <option value="recognition">Recognition</option>
-                  </select>
-                </FieldRow>
-                <FieldRow label={benefit.type === "discount" ? "Discount on the tier's spend" : "Cost per member a year"}>
-                  <NumberField label={`${displayNames[i + 1]} benefit value`} value={benefit.value} min={0}
-                    max={benefit.type === "discount" ? 50 : 100_000}
-                    prefix={benefit.type === "discount" ? undefined : "€"} suffix={benefit.type === "discount" ? "%" : undefined}
-                    onChange={(v) => setBenefit(i, { value: v })} />
-                </FieldRow>
-              </div>
-            )
-          })}
+            {state.thresholds.map((t, i) => {
+              const benefit = state.benefits[i]
+              return (
+                <div key={i} className="rounded-md p-3 mb-3" style={{ background: "var(--paper)" }}>
+                  <FieldRow label={`Tier ${i + 1} name`}>
+                    <input type="text" value={state.names[i + 1]} aria-label={`Tier ${i + 1} name`} maxLength={24}
+                      onChange={(e) => setName(i + 1, e.target.value)} onBlur={(e) => { if (!e.target.value.trim()) setName(i + 1, DEFAULT_NAMES[i + 1]) }}
+                      className="text-right text-[16px] font-semibold w-[9rem] min-h-[44px] flex-shrink-0 bg-transparent border-b focus:outline-none"
+                      style={{ borderColor: "var(--border)", color: "var(--ink)" }} />
+                  </FieldRow>
+                  <ThresholdSlider label={`Spend to reach ${displayNames[i + 1]}`}
+                    tooltip="Annual spend a customer needs to reach this tier. Each threshold stays above the one below it."
+                    value={t} min={sliderRange.min} max={sliderRange.max} onChange={setThreshold(i)} />
+                  <FieldRow label="Benefit" tooltip="Discount: a % off everything the tier buys. Operational (e.g. free delivery, priority service) and recognition (e.g. early access, a named contact): your cost per member a year.">
+                    <select value={benefit.type} aria-label={`${displayNames[i + 1]} benefit type`}
+                      onChange={(e) => setBenefit(i, { type: e.target.value as BenefitType })}
+                      className="text-[16px] min-h-[44px] w-[9rem] flex-shrink-0 bg-transparent border-b focus:outline-none"
+                      style={{ borderColor: "var(--border)", color: "var(--ink)" }}>
+                      <option value="discount">Discount %</option>
+                      <option value="operational">Operational</option>
+                      <option value="recognition">Recognition</option>
+                    </select>
+                  </FieldRow>
+                  <FieldRow label={benefit.type === "discount" ? "Discount on the tier's spend" : "Cost per member a year"}>
+                    <NumberField label={`${displayNames[i + 1]} benefit value`} value={benefit.value} min={0}
+                      max={benefit.type === "discount" ? 50 : 100_000}
+                      prefix={benefit.type === "discount" ? undefined : "€"} suffix={benefit.type === "discount" ? "%" : undefined}
+                      onChange={(v) => setBenefit(i, { value: v })} />
+                  </FieldRow>
+                </div>
+              )
+            })}
 
-          <div className="mb-6">
-            <button type="button" onClick={() => update({ current: [...state.thresholds] })}
-              className={`${buttonClass} w-full`}
-              style={{ fontFamily: "Syne, sans-serif", background: "var(--green)", color: "#fff", borderColor: "var(--green)" }}>
-              {state.current ? "Update current programme" : "Set as current programme"}
-            </button>
-            <Note>{state.current
-              ? `Current programme: ${state.current.map((v, i) => `${displayNames[i + 1]} from ${fmtEur(v)}`).join(" · ")}. Move a threshold to see how current members would be affected.`
-              : "Saves today's thresholds. Move the sliders afterwards to see how current members would be affected."}</Note>
-            {state.current && (
-              <button type="button" onClick={() => update({ current: null })} className="min-h-[44px] text-[12px] underline"
-                style={{ color: "var(--muted)", fontFamily: "Syne, sans-serif", background: "none" }}>Clear current programme</button>
-            )}
-          </div>
+            <div className="mb-6">
+              <button type="button" onClick={() => update({ current: [...state.thresholds] })}
+                className={`${buttonClass} w-full`}
+                style={{ fontFamily: "Syne, sans-serif", background: "var(--green)", color: "#fff", borderColor: "var(--green)" }}>
+                {state.current ? "Update current programme" : "Set as current programme"}
+              </button>
+              <Note>{state.current
+                ? `Current programme: ${state.current.map((v, i) => `${displayNames[i + 1]} from ${fmtEur(v)}`).join(" · ")}. Move a threshold to see how current members would be affected.`
+                : "Saves today's thresholds. Move the sliders afterwards to see how current members would be affected."}</Note>
+              {state.current && (
+                <button type="button" onClick={() => update({ current: null })} className="min-h-[44px] text-[12px] underline"
+                  style={{ color: "var(--muted)", fontFamily: "Syne, sans-serif", background: "none" }}>Clear current programme</button>
+              )}
+            </div>
 
-          <SectionTitle>Programme rules</SectionTitle>
-          <SliderInput label="Gross margin" tooltip="Your gross margin on what customers buy. Used to set benefit costs against the margin each tier brings."
-            value={state.marginPct} min={1} max={90} step={1} suffix="%" onChange={(v) => update({ marginPct: v })} />
+            <SectionTitle>Programme rules</SectionTitle>
+            <SliderInput label="Gross margin" tooltip="Your gross margin on what customers buy. Used to set benefit costs against the margin each tier brings."
+              value={state.marginPct} min={1} max={90} step={1} suffix="%" onChange={(v) => update({ marginPct: v })} />
 
-          <div className="mb-4">
-            <div className="mb-1.5"><LabelWithTooltip label="Qualification window" tooltip="The period over which spend counts towards a threshold." /></div>
-            <Segmented<number> label="Qualification window" value={state.windowMonths} onChange={(v) => update({ windowMonths: v as 12 | 24 | 36 })}
-              options={[12, 24, 36].map((m) => ({ value: m, label: `${m} months` }))} />
-            <Note>{WINDOW_SENTENCE}</Note>
-          </div>
+            <div className="mb-4">
+              <div className="mb-1.5"><LabelWithTooltip label="Qualification window" tooltip="The period over which spend counts towards a threshold." /></div>
+              <Segmented<number> label="Qualification window" value={state.windowMonths} onChange={(v) => update({ windowMonths: v as 12 | 24 | 36 })}
+                options={[12, 24, 36].map((m) => ({ value: m, label: `${m} months` }))} />
+              <Note>{WINDOW_SENTENCE}</Note>
+            </div>
 
-          <div className="mb-4">
-            <div className="mb-1.5"><LabelWithTooltip label="Status validity" tooltip="How long a tier lasts once reached, before the customer qualifies again." /></div>
-            <Segmented<number> label="Status validity" value={state.validityYears} onChange={(v) => update({ validityYears: v as 1 | 2 | 3 })}
-              options={[1, 2, 3].map((y) => ({ value: y, label: plural(y, "year") }))} />
-          </div>
+            <div className="mb-4">
+              <div className="mb-1.5"><LabelWithTooltip label="Status validity" tooltip="How long a tier lasts once reached, before the customer qualifies again." /></div>
+              <Segmented<number> label="Status validity" value={state.validityYears} onChange={(v) => update({ validityYears: v as 1 | 2 | 3 })}
+                options={[1, 2, 3].map((y) => ({ value: y, label: plural(y, "year") }))} />
+            </div>
 
-          <Toggle label="Soft landing (drop max one tier)" tooltip="A member who does not requalify drops one tier per period instead of falling to the base level."
-            checked={state.softLanding} onChange={(v) => update({ softLanding: v })} />
+            <Toggle label="Soft landing (drop max one tier)" tooltip="A member who does not requalify drops one tier per period instead of falling to the base level."
+              checked={state.softLanding} onChange={(v) => update({ softLanding: v })} />
 
-          <Toggle label="Keep status through non-purchase activity" tooltip="Members can keep their tier through activity other than buying."
-            checked={state.activityKeep} onChange={(v) => update({ activityKeep: v })}>
-            {state.activityKeep && <Note>{ACTIVITY_SENTENCE}</Note>}
-          </Toggle>
+            <Toggle label="Keep status through non-purchase activity" tooltip="Members can keep their tier through activity other than buying."
+              checked={state.activityKeep} onChange={(v) => update({ activityKeep: v })}>
+              {state.activityKeep && <Note>{ACTIVITY_SENTENCE}</Note>}
+            </Toggle>
 
-          <Toggle label="Exclude extreme customers from threshold setting" tooltip="Leaves out customers who spend far more than everyone else, such as business buyers, so they do not pull the picture."
-            checked={state.excludeExtremes} onChange={(v) => update({ excludeExtremes: v })}>
-            <Note>{EXTREME_RULE} Limit in this data: {Number.isFinite(r.extremes.limit) ? fmtEur(r.extremes.limit) : "n/a"}.</Note>
-            <Note>{extremesFound
-              ? `Found: ${plural(r.extremes.count, "customer")} (${fmtShare(r.extremes.customerShare)} of customers, ${fmtShare(r.extremes.revenueShare)} of revenue).${state.excludeExtremes ? " Tier results below leave them out; in a live programme they would still reach the top tier." : ""}`
-              : "No customers meet this rule in the current data."}</Note>
-          </Toggle>
+            <Toggle label="Exclude extreme customers from threshold setting" tooltip="Leaves out customers who spend far more than everyone else, such as business buyers, so they do not pull the picture."
+              checked={state.excludeExtremes} onChange={(v) => update({ excludeExtremes: v })}>
+              <Note>{EXTREME_RULE} Limit in this data: {Number.isFinite(r.extremes.limit) ? fmtEur(r.extremes.limit) : "n/a"}.</Note>
+              <Note>{extremesFound
+                ? `Found: ${plural(r.extremes.count, "customer")} (${fmtShare(r.extremes.customerShare)} of customers, ${fmtShare(r.extremes.revenueShare)} of revenue).${state.excludeExtremes ? " Tier results below leave them out; in a live programme they would still reach the top tier." : ""}`
+                : "No customers meet this rule in the current data."}</Note>
+            </Toggle>
+          </>)}
         </div>
 
         <div id="tier-results" className="p-5 min-w-0 scroll-mt-[64px]" style={{ background: "#fafaf8" }}>
@@ -880,127 +1087,145 @@ export function TierPlanner() {
             <div style={{ fontSize: "10px", color: "#6b6b68", marginTop: "2px" }} suppressHydrationWarning>{new Date().toLocaleDateString("en-GB")}</div>
           </div>
 
-          <div className="hidden lg:block">{chart}</div>
+          {hasData ? (<>
+            {state.source === "csv" && csv?.sampled && (
+              <p role="note" className="rounded-md px-3 py-2.5 mb-3 text-[12px] leading-snug"
+                style={{ background: "rgba(192,138,62,0.14)", color: "#7a5520" }}>{csvSampleSentence(csv)}</p>
+            )}
+            <div className="hidden lg:block">{chart}</div>
 
-          <div className="rounded-lg p-5 mb-3" style={{ background: "var(--green)" }}>
-            <div className="text-[10px] tracking-[0.14em] uppercase mb-1" style={{ color: "rgba(255,255,255,0.55)", fontFamily: "Syne, sans-serif" }}>Top tier · {top.name}</div>
-            <div className="leading-none mb-1" style={{ fontFamily: "Cormorant Garamond, serif", fontStyle: "italic", fontWeight: 600, fontSize: "3.2rem", color: "#fff" }}>{fmtShare(top.customerShare)}</div>
-            <div className="text-[12px] mb-3" style={{ color: "rgba(255,255,255,0.75)" }}>
-              of customers<span className="mx-2 opacity-40">·</span>{fmtShare(top.revenueShare)} of revenue<span className="mx-2 opacity-40">·</span>{plural(state.tierCount, "tier")} above {displayNames[0]}
+            <div className="rounded-lg p-5 mb-3" style={{ background: "var(--green)" }}>
+              <div className="text-[10px] tracking-[0.14em] uppercase mb-1" style={{ color: "rgba(255,255,255,0.55)", fontFamily: "Syne, sans-serif" }}>Top tier · {top.name}</div>
+              <div className="leading-none mb-1" style={{ fontFamily: "Cormorant Garamond, serif", fontStyle: "italic", fontWeight: 600, fontSize: "3.2rem", color: "#fff" }}>{fmtShare(top.customerShare)}</div>
+              <div className="text-[12px] mb-3" style={{ color: "rgba(255,255,255,0.75)" }}>
+                of customers<span className="mx-2 opacity-40">·</span>{fmtShare(top.revenueShare)} of revenue<span className="mx-2 opacity-40">·</span>{plural(state.tierCount, "tier")} above {displayNames[0]}
+              </div>
+              <div className="text-[12px] rounded px-2.5 py-2" style={{ background: "rgba(255,255,255,0.12)", color: "#fff", fontFamily: "Syne, sans-serif" }}>
+                Rules to explain to a customer: {r.complexity.count}
+                {r.complexity.count > 0 && (
+                  <ul className="mt-1 pl-4 list-disc space-y-0.5" style={{ color: "rgba(255,255,255,0.7)", fontFamily: "Inter, sans-serif" }}>
+                    {r.complexity.mechanisms.map((mechanism) => (
+                      <li key={mechanism} className="text-[11px]">{mechanism}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
-            <div className="text-[12px] rounded px-2.5 py-2" style={{ background: "rgba(255,255,255,0.12)", color: "#fff", fontFamily: "Syne, sans-serif" }}>
-              Rules to explain to a customer: {r.complexity.count}
-              {r.complexity.count > 0 && (
-                <ul className="mt-1 pl-4 list-disc space-y-0.5" style={{ color: "rgba(255,255,255,0.7)", fontFamily: "Inter, sans-serif" }}>
-                  {r.complexity.mechanisms.map((mechanism) => (
-                    <li key={mechanism} className="text-[11px]">{mechanism}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
 
-          {state.current && change && (
-            <OutCard title="Change against current programme">
-              {!thresholdsChanged ? (
-                <p className="text-[13px] leading-relaxed" style={{ color: "var(--muted)" }}>Thresholds match the current programme. Move a threshold to see how current members would be affected.</p>
-              ) : (
-                <div className="text-[13px] leading-relaxed space-y-2">
-                  <p>
-                    {change.losing > 0
-                      ? <>With these thresholds, <strong>{fmtInt(change.losing)}</strong> of {fmtInt(change.currentMembers)} current members ({fmtShare(change.currentMembers ? change.losing / change.currentMembers : 0)}) would lose status when their status period ends.</>
-                      : <>With these thresholds, none of the {fmtInt(change.currentMembers)} current members would lose status.</>}
-                  </p>
-                  <p style={{ color: "var(--muted)" }}>Until then they keep the status they have. Status validity: {plural(state.validityYears, "year")}.</p>
-                  {change.losing > 0 && (
-                    <p>{state.softLanding
-                      ? change.caughtBySoftLanding > 0
-                        ? <>Soft landing: <strong>{fmtInt(change.caughtBySoftLanding)}</strong> of them drop one tier where they would otherwise fall further.</>
-                        : <>Soft landing: none of them would fall more than one tier anyway.</>
-                      : <>Without soft landing, <strong>{fmtInt(change.fallingMoreThanOne)}</strong> of them would fall more than one tier.</>}
-                    </p>
-                  )}
-                  {change.losing > 0 && (
-                    <ul className="text-[12px] space-y-0.5" style={{ color: "var(--muted)" }}>
-                      {change.byTier.filter((t) => t.members > 0).map((t) => (
-                        <li key={t.tier}>{displayNames[t.tier]}: {fmtInt(t.losing)} of {fmtInt(t.members)} members lose status</li>
-                      ))}
-                    </ul>
-                  )}
-                  {change.gaining > 0 && <p style={{ color: "var(--muted)" }}>{plural(change.gaining, "customer")} would reach a higher tier than today.</p>}
-                </div>
-              )}
-            </OutCard>
-          )}
-
-          {tiersNamed.slice().reverse().map((t) => {
-            const next = t.reach ? tiersNamed[t.reach.nextTier] : null
-            return (
-              <OutCard key={t.index} title={
-                <span className="flex items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-2 min-w-0">
-                    <span className="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: TIER_COLOURS[t.index] }} />
-                    <span className="truncate" style={{ color: "var(--ink)", fontWeight: 600 }}>{t.name}</span>
-                  </span>
-                  <span className="flex-shrink-0">{t.index === 0 ? `below ${fmtEur(tiersNamed[1].threshold)}` : `from ${fmtEur(t.threshold)}`}</span>
-                </span>
-              }>
-                {t.customers === 0 ? (
-                  <p className="text-[13px]" style={{ color: "var(--muted)" }}>No customers in this tier with these thresholds.</p>
+            {state.current && change && (
+              <OutCard title="Change against current programme">
+                {!thresholdsChanged ? (
+                  <p className="text-[13px] leading-relaxed" style={{ color: "var(--muted)" }}>Thresholds match the current programme. Move a threshold to see how current members would be affected.</p>
                 ) : (
-                  <>
-                    <div className="grid grid-cols-2 gap-2 mb-3">
-                      <MetricCard label="Customers" value={fmtShare(t.customerShare)} sub={fmtInt(t.customers)} />
-                      <MetricCard label="Revenue" value={fmtShare(t.revenueShare)} sub={fmtEur(t.revenue)} />
-                      <MetricCard label="Tier margin" value={fmtEur(t.margin)} sub={`at ${state.marginPct}% gross margin`} />
-                      <MetricCard label="Benefit cost" value={t.benefit ? fmtEur(t.benefitCost) : "—"}
-                        sub={t.benefit ? `${t.benefitCostPctOfMargin.toFixed(1)}% of tier margin` : "No benefits at this level"} />
-                    </div>
-                    <div className="text-[13px] leading-relaxed space-y-1.5">
-                      {t.benefit && <p style={{ color: "var(--muted)" }}>Benefit: {benefitLabel(t.benefit)}.</p>}
-                      {t.discountOnExisting !== null && (
-                        <p>The discount gives away <strong>{fmtEur(t.discountOnExisting)}</strong> a year on purchases this tier already makes today: {t.benefitCostPctOfMargin.toFixed(1)}% of its margin.</p>
-                      )}
-                      {t.reach && next ? (
-                        <>
-                          <p>{reachSentence(t.name, next.name, t.reach.extraPurchases, t.reach.currentPurchases)}</p>
-                          <p style={{ color: "var(--muted)" }}>{windowSentence(t.name, next.name, Math.round(t.reach.monthsAtPace), state.windowMonths)}</p>
-                          <p style={{ color: "var(--muted)" }}>{fmtShare(t.reach.nearShare)} of {t.name} members are within one typical purchase ({fmtEur(t.reach.basket)}) of {next.name}.</p>
-                        </>
-                      ) : (
-                        <p style={{ color: "var(--muted)" }}>This is the top tier. Typical member: {fmtEur(t.medianSpend)} a year across {purchasesToday(t.medianPurchases)} purchases.</p>
-                      )}
-                    </div>
-                  </>
+                  <div className="text-[13px] leading-relaxed space-y-2">
+                    <p>
+                      {change.losing > 0
+                        ? <>With these thresholds, <strong>{fmtInt(change.losing)}</strong> of {fmtInt(change.currentMembers)} current members ({fmtShare(change.currentMembers ? change.losing / change.currentMembers : 0)}) would lose status when their status period ends.</>
+                        : <>With these thresholds, none of the {fmtInt(change.currentMembers)} current members would lose status.</>}
+                    </p>
+                    <p style={{ color: "var(--muted)" }}>Until then they keep the status they have. Status validity: {plural(state.validityYears, "year")}.</p>
+                    {change.losing > 0 && (
+                      <p>{state.softLanding
+                        ? change.caughtBySoftLanding > 0
+                          ? <>Soft landing: <strong>{fmtInt(change.caughtBySoftLanding)}</strong> of them drop one tier where they would otherwise fall further.</>
+                          : <>Soft landing: none of them would fall more than one tier anyway.</>
+                        : <>Without soft landing, <strong>{fmtInt(change.fallingMoreThanOne)}</strong> of them would fall more than one tier.</>}
+                      </p>
+                    )}
+                    {change.losing > 0 && (
+                      <ul className="text-[12px] space-y-0.5" style={{ color: "var(--muted)" }}>
+                        {change.byTier.filter((t) => t.members > 0).map((t) => (
+                          <li key={t.tier}>{displayNames[t.tier]}: {fmtInt(t.losing)} of {fmtInt(t.members)} members lose status</li>
+                        ))}
+                      </ul>
+                    )}
+                    {change.gaining > 0 && <p style={{ color: "var(--muted)" }}>{plural(change.gaining, "customer")} would reach a higher tier than today.</p>}
+                  </div>
                 )}
               </OutCard>
-            )
-          })}
-
-          <OutCard title="Extreme customers and thresholds">
-            {extremesFound ? (
-              <div className="text-[13px] leading-relaxed space-y-1.5">
-                <p>Average annual spend is <strong>{fmtEur(r.percentileShift.meanAll)}</strong> with extreme customers and <strong>{fmtEur(r.percentileShift.meanClean)}</strong> without them.</p>
-                {r.percentileShift.rows.map((row) => (
-                  <p key={row.tier} style={{ color: "var(--muted)" }}>
-                    The {displayNames[row.tier]} threshold ({fmtEur(row.threshold)}) sits at the {Math.round(row.percentile * 100)}th percentile of all customers. Without extreme customers, the same percentile is {fmtEur(row.valueWithout)}.
-                  </p>
-                ))}
-              </div>
-            ) : (
-              <p className="text-[13px]" style={{ color: "var(--muted)" }}>No customers meet the extreme-customer rule in this data, so percentile thresholds are the same with and without them.</p>
             )}
-          </OutCard>
+
+            {tiersNamed.slice().reverse().map((t) => {
+              const next = t.reach ? tiersNamed[t.reach.nextTier] : null
+              return (
+                <OutCard key={t.index} title={
+                  <span className="flex items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-2 min-w-0">
+                      <span className="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: TIER_COLOURS[t.index] }} />
+                      <span className="truncate" style={{ color: "var(--ink)", fontWeight: 600 }}>{t.name}</span>
+                    </span>
+                    <span className="flex-shrink-0">{t.index === 0 ? `below ${fmtEur(tiersNamed[1].threshold)}` : `from ${fmtEur(t.threshold)}`}</span>
+                  </span>
+                }>
+                  {t.customers === 0 ? (
+                    <p className="text-[13px]" style={{ color: "var(--muted)" }}>No customers in this tier with these thresholds.</p>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-2 gap-2 mb-3">
+                        <MetricCard label="Customers" value={fmtShare(t.customerShare)} sub={fmtInt(t.customers)} />
+                        <MetricCard label="Revenue" value={fmtShare(t.revenueShare)} sub={fmtEur(t.revenue)} />
+                        <MetricCard label="Tier margin" value={fmtEur(t.margin)} sub={`at ${state.marginPct}% gross margin`} />
+                        <MetricCard label="Benefit cost" value={t.benefit ? fmtEur(t.benefitCost) : "—"}
+                          sub={t.benefit ? `${t.benefitCostPctOfMargin.toFixed(1)}% of tier margin` : "No benefits at this level"} />
+                      </div>
+                      <div className="text-[13px] leading-relaxed space-y-1.5">
+                        {t.benefit && <p style={{ color: "var(--muted)" }}>Benefit: {benefitLabel(t.benefit)}.</p>}
+                        {t.discountOnExisting !== null && (
+                          <p>The discount gives away <strong>{fmtEur(t.discountOnExisting)}</strong> a year on purchases this tier already makes today: {t.benefitCostPctOfMargin.toFixed(1)}% of its margin.</p>
+                        )}
+                        {t.reach && next ? (
+                          <>
+                            <p>{reachSentence(t.name, next.name, t.reach.extraPurchases, t.reach.currentPurchases)}</p>
+                            <p style={{ color: "var(--muted)" }}>{windowSentence(t.name, next.name, Math.round(t.reach.monthsAtPace), state.windowMonths)}</p>
+                            <p style={{ color: "var(--muted)" }}>{fmtShare(t.reach.nearShare)} of {t.name} members are within one typical purchase ({fmtEur(t.reach.basket)}) of {next.name}.</p>
+                          </>
+                        ) : (
+                          <p style={{ color: "var(--muted)" }}>This is the top tier. Typical member: {fmtEur(t.medianSpend)} a year across {purchasesToday(t.medianPurchases)} purchases.</p>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </OutCard>
+              )
+            })}
+
+            <OutCard title="Extreme customers and thresholds">
+              {extremesFound ? (
+                <div className="text-[13px] leading-relaxed space-y-1.5">
+                  <p>Average annual spend is <strong>{fmtEur(r.percentileShift.meanAll)}</strong> with extreme customers and <strong>{fmtEur(r.percentileShift.meanClean)}</strong> without them.</p>
+                  {r.percentileShift.rows.map((row) => (
+                    <p key={row.tier} style={{ color: "var(--muted)" }}>
+                      The {displayNames[row.tier]} threshold ({fmtEur(row.threshold)}) sits at the {Math.round(row.percentile * 100)}th percentile of all customers. Without extreme customers, the same percentile is {fmtEur(row.valueWithout)}.
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[13px]" style={{ color: "var(--muted)" }}>No customers meet the extreme-customer rule in this data, so percentile thresholds are the same with and without them.</p>
+              )}
+            </OutCard>
+          </>) : (
+            <OutCard title="Results">
+              <p className="text-[13px] leading-relaxed" style={{ color: "var(--muted)" }}>
+                {csv ? "No usable rows in this file. Replace it with a file based on the template to see your tiers." : "Upload a CSV file to see your tiers. Results appear here once the file is checked."}
+              </p>
+            </OutCard>
+          )}
         </div>
       </div>
 
       <div>
         <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center px-5 py-3 border-t" style={{ borderColor: "var(--border)", background: "var(--paper)" }}>
-          {([["Share URL", shareUrl], ["Copy summary", copySummary], ["↺ Reset", reset], ["Print / PDF", () => window.print()]] as [string, () => void][]).map(([label, fn]) => (
+          {([["Share URL", shareUrl], ["Copy summary", copySummary], ["↺ Reset", reset], ["Print / PDF", () => window.print()]] as [string, () => void][])
+            .filter(([label]) => hasData || label === "Share URL" || label === "↺ Reset").map(([label, fn]) => (
             <button key={label} type="button" onClick={fn} className={buttonClass}
               style={{ fontFamily: "Syne, sans-serif", borderColor: "var(--border)", color: "var(--ink)", background: "none" }}>{label}</button>
           ))}
           {copied && <span className="col-span-2 text-[11px]" role="status" style={{ color: "var(--gl)", fontFamily: "Syne, sans-serif" }}>{copied === "link" ? "Link copied ✓" : "Summary copied ✓"}</span>}
+          {state.source === "csv" && (
+            <p className="col-span-2 sm:basis-full text-[12px] leading-snug" style={{ color: "var(--muted)" }}>
+              The link keeps your programme settings but not your uploaded data. Anyone who opens it will need to upload their own file.
+            </p>
+          )}
         </div>
 
         <details open={defsOpen} onToggle={(e) => setDefsOpen((e.target as HTMLDetailsElement).open)} className="border-t" style={{ borderColor: "var(--border)" }}>
@@ -1018,6 +1243,7 @@ export function TierPlanner() {
               { term: "Extreme customers", def: "Customers whose annual spend lies above Q3 + 3 × IQR, measured on the log of spend. They are often business or corporate buyers. Left in, they can pull thresholds up to levels few other customers reach." },
               { term: "Reachability", def: "How many extra purchases at the tier's typical basket separate a typical (median) member from the next threshold, next to how many purchases that member makes a year today." },
               { term: "Typical basket", def: "The median spend per purchase among a tier's members. In the approximation from four numbers it is the same for everyone: median annual spend ÷ purchases a year." },
+              { term: "Uploaded CSV file", def: `Read and checked in your browser; nothing is sent to a server. Columns are matched by name: annual_spend and purchases. A row is skipped when spend is zero or below, a value is missing or not a number, or there are no purchases despite spend. Above ${CSV_ROW_LIMIT.toLocaleString("en-GB")} valid rows, results use a random sample of ${CSV_ROW_LIMIT.toLocaleString("en-GB")} drawn with a fixed seed, so the same file gives the same results; customer counts and revenue are scaled back to the whole file.` },
               { term: "Approximation from four numbers", def: "Spend is modelled as a log-normal distribution with your median, spread to match the revenue share of your top 20%. It is drawn as 5,000 evenly spaced points, so results do not change between visits." },
             ].map(({ term, def }) => (
               <div key={term}>
@@ -1046,7 +1272,7 @@ export function TierPlanner() {
         </div>
       </div>
 
-      <button type="button" onClick={scrollToResults}
+      {hasData && <button type="button" onClick={scrollToResults}
         className="tp-sticky lg:hidden sticky bottom-0 z-30 w-full grid grid-cols-[1fr_1fr_1fr_auto] items-center gap-3 px-5 pt-2.5 text-left min-h-[56px]"
         style={{ background: "var(--green)", color: "#fff", boxShadow: "0 -2px 10px rgba(10,10,8,0.15)", paddingBottom: "calc(0.625rem + env(safe-area-inset-bottom))" }}>
         <span className="min-w-0">
@@ -1063,7 +1289,7 @@ export function TierPlanner() {
         </span>
         <span aria-hidden="true" className="text-[18px]" style={{ color: "rgba(255,255,255,0.75)" }}>↓</span>
         <span className="sr-only">Show tier results</span>
-      </button>
+      </button>}
 
       <style>{`
 .tp-range {
@@ -1075,6 +1301,8 @@ export function TierPlanner() {
   background: transparent;
 }
 .tp-range:focus { outline: none; }
+.tp-spin { animation: tp-spin 0.8s linear infinite; }
+@keyframes tp-spin { to { transform: rotate(360deg); } }
 .tp-range::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;

@@ -12,6 +12,7 @@ import {
   normInv,
   planTiers,
   sampleCustomers,
+  sortAscending,
   suggestThresholds,
   thresholdChange,
   topShare,
@@ -279,5 +280,21 @@ describe("complexity counter", () => {
     expect(complexity({ windowMonths: 24, softLanding: false, activityKeep: false }).count).toBe(1)
     expect(complexity({ windowMonths: 12, softLanding: true, activityKeep: false }).count).toBe(1)
     expect(complexity({ windowMonths: 36, softLanding: true, activityKeep: true }).count).toBe(3)
+  })
+})
+
+// ─────────────────────────────────────────────────────────────
+// Fast numeric sort (used for up to 50,000 uploaded customers)
+// ─────────────────────────────────────────────────────────────
+describe("sortAscending", () => {
+  it("gives exactly the comparator sort's order", () => {
+    const values = sampleCustomers().map((c) => c.spend).concat([0, 0, 1e-9, 12.5, 12.5, 1e9])
+    expect(Array.from(sortAscending(values))).toEqual([...values].sort((a, b) => a - b))
+  })
+
+  it("does not change its input", () => {
+    const values = [3, 1, 2]
+    sortAscending(values)
+    expect(values).toEqual([3, 1, 2])
   })
 })
