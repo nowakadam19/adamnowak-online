@@ -890,9 +890,13 @@ export function TierPlanner() {
             </div>
             <div className="text-[12px] rounded px-2.5 py-2" style={{ background: "rgba(255,255,255,0.12)", color: "#fff", fontFamily: "Syne, sans-serif" }}>
               Rules to explain to a customer: {r.complexity.count}
-              <span className="block text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.7)", fontFamily: "Inter, sans-serif" }}>
-                {r.complexity.count ? `Beyond spend more, get more: ${r.complexity.mechanisms.join(" · ")}` : "Nothing beyond spend more, get more"}
-              </span>
+              {r.complexity.count > 0 && (
+                <ul className="mt-1 pl-4 list-disc space-y-0.5" style={{ color: "rgba(255,255,255,0.7)", fontFamily: "Inter, sans-serif" }}>
+                  {r.complexity.mechanisms.map((mechanism) => (
+                    <li key={mechanism} className="text-[11px]">{mechanism}</li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 
